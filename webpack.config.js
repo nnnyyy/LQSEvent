@@ -5,6 +5,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const { VueLoaderPlugin } = require('vue-loader');
+const nodeExternals = require('webpack-node-externals');
 
 const env = process.env.NODE_ENV;
 const sourceMap = env === 'development';
@@ -23,19 +24,22 @@ const cssLoader = {
 const vueLoader = {
     test: /\.vue$/,
     loader: 'vue-loader',
-    include: [ path.join(__dirname,"src"), path.join(__dirname, 'node_modules/webpack-dev-server/client') ]
+    include: [ path.join(__dirname,"src")]
 };
 
 const babelLoader = {
     test: /\.js$/,
     loader: 'babel-loader',
-    include: [ path.join(__dirname,"src"), path.join(__dirname, 'node_modules/webpack-dev-server/client') ]
+    include: [ path.join(__dirname,"src")]
 };
 
 const config = {
     context: path.join(__dirname, "src"),
     entry: "./main.js",
     devtool: 'inline-source-map',
+    externals: {
+        'vue': 'Vue'
+    },
     devServer: devServerConfig,
     module: {
         rules: [
