@@ -38,7 +38,9 @@ const config = {
     entry: "./main.js",
     devtool: 'inline-source-map',
     externals: {
-        'vue': 'Vue'
+        'vue': 'Vue',
+        'jquery': '$',
+        'lodash': '_'
     },
     devServer: devServerConfig,
     module: {

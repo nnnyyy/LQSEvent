@@ -5,10 +5,14 @@ import './css/style.css'
 import Vue from 'vue'
 import App from './App.vue'
 import Global from './global.js'
+import $ from 'jquery'
+import _ from 'lodash'
 
-new Global();
+$(document).ready(function() {
+    new Vue({
+        el: '#app',
+        render: h => h ( App )
+    });
 
-new Vue({
-    el: '#app',
-    render: h => h ( App )
+    console.log( _.partition([1,2,3,4], n => n % 2) );
 });
