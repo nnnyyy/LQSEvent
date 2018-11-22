@@ -13,6 +13,4 @@ $(document).ready(function() {
         el: '#app',
         render: h => h ( App )
     });
-
-    console.log( _.partition([1,2,3,4], n => n % 2) );
 });

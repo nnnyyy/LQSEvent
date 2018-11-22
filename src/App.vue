@@ -1,18 +1,21 @@
 <template>
     <div>
-        <h1>Hello Vue World ^^</h1>
-        <test-h1
-                testTitle="hello"
-                ></test-h1>
+        <top-bar></top-bar>
+        <contents></contents>
     </div>
 </template>
 
 <script>
-    import Test from './components/Test.vue';
+    import Top from './components/Top.vue';
+    import Contents from './components/Contents.vue';
 
     export default {
         components: {
-            'test-h1': Test
+            'top-bar': Top,
+            'contents': Contents
         }
     }
 </script>
+
+<style>
+</style>
