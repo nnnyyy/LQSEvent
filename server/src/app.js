@@ -4,6 +4,7 @@
 import express from 'express';
 import path from 'path';
 import ServerManager from './modules/ServerManager.js';
+import routes from './router/index.js';
 
 const app = express();
 
@@ -13,9 +14,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, '..', '..','dist')));
 app.use(express.static(path.join(__dirname, '..', '..','public')));
 
-app.get('/', function(req,res) {
-    res.render('index');
-});
+app.use('/', routes );
 
 app.listen(3000, function() {
     console.log('Example app listening on port 3000!');

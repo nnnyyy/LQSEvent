@@ -1,6 +1,6 @@
 <template>
     <div class="logo-area">
-        Jokanne!!
+        LogoArea
     </div>
 </template>
 
@@ -16,6 +16,6 @@
     .logo-area {
         width: 200px;
         height: inherit;
-        line-height: 45px;
+        line-height: 200px;
     }
 </style>

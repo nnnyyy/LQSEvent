@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="main">
         <top-bar></top-bar>
         <contents></contents>
     </div>
@@ -18,4 +18,5 @@
 </script>
 
 <style>
+
 </style>
