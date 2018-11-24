@@ -22,7 +22,7 @@
 <style>
     .top {
         width: 100%;
-        height: 300px;
+        height: 200px;
         background-color: #004444;
     }
 </style>

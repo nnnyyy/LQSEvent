@@ -3,11 +3,11 @@
  */
 'use strict';
 
-import express from 'express';
+const express = require('express');
 const Router = express.Router();
 
 Router.get('/', function(req, res, next) {
     res.render('index');
 });
 
-export default Router;
+module.exports = Router;

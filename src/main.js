@@ -9,6 +9,7 @@ import $ from 'jquery'
 import _ from 'lodash'
 
 $(document).ready(function() {
+    Vue.prototype.$bus = new Vue();
     new Vue({
         el: '#app',
         render: h => h ( App )

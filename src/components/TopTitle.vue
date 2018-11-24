@@ -1,7 +1,6 @@
 <template>
     <div class="toptitle">
-        <div class="toptitle-inner">
-            다음 공유기 라이브쇼가 예정되어있지 않습니다.
+        <div class="toptitle-inner" v-html="titleText">
         </div>
     </div>
 </template>
@@ -9,7 +8,9 @@
 <script>
     export default {
         data: function () {
-            return {};
+            return {
+                titleText: "다음 중 잘못 표기 된 것은?"
+            };
         }
     }
 </script>

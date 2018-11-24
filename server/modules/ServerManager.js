@@ -9,4 +9,4 @@ class ServerManager {
     }
 }
 
-export default ServerManager
+module.exports = ServerManager
