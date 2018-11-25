@@ -18,6 +18,7 @@
 
 <script>
     import P from '../../common/protocol';
+    import G from '../global';
 
     export default {
         data: function () {
@@ -26,19 +27,23 @@
                     {name: '채팅 컬러 교환권', cnt: 20 },
                     {name: '채팅 스타일 교환권', cnt: 1 }
                 ],
-                visible: true
+                visible: false
             };
         },
         methods: {
             onCloseInventory: function() {
                 this.$bus.$emit(P.CloseInventory, "");
-                this.$bus.$emit(P.StartTimer, "");
+                G.setQuizInfo();
             }
         },
         created: function() {
             const v = this;
             this.$bus.$on(P.CloseInventory, function(data) {
                 v.visible = false;
+            });
+
+            this.$bus.$on("openInventory", function() {
+                v.visible = true;
             });
         }
     }

@@ -11,6 +11,15 @@
             return {
                 titleText: "다음 중 잘못 표기 된 것은?"
             };
+        },
+        created: function() {
+            const v = this;
+            this.$bus.$on('QuizInfo', function(info) {
+                const infoParsed = JSON.parse(info);
+                v.titleText = infoParsed.q;
+            });
+        },
+        methods: function() {
         }
     }
 </script>

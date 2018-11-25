@@ -10,7 +10,8 @@
                     ></post-card>
         </template>
         -->
-        <quiz-timer></quiz-timer>
+        <quiz-answer-list></quiz-answer-list>
+        <quiz-timer width="400" align="center" lineColor="#770077"></quiz-timer>
 
         <!-- 화면 우측 인벤토리 -->
         <inventory></inventory>
@@ -22,7 +23,10 @@
     import PostCard from './PostCard.vue';
     import Inventory from './Inventory.vue';
     import QuizTimer from './QuizTimer.vue';
+    import QuizAnswerList from './QuizAnswerList.vue';
     import $ from 'jquery';
+
+    import G from '../global';
 
     export default {
         data: function () {
@@ -39,7 +43,8 @@
             'data-list': DataList,
             'post-card': PostCard,
             'inventory': Inventory,
-            'quiz-timer': QuizTimer
+            'quiz-timer': QuizTimer,
+            'quiz-answer-list': QuizAnswerList
         },
         methods: {
             checkScrollToEnd: function() {

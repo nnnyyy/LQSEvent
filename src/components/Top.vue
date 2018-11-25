@@ -1,6 +1,9 @@
 <template>
     <div class="top">
         <title-area></title-area>
+        <div class="menu-btn-area">
+            <button @click="onBtnOpenMenu">메뉴</button>
+        </div>
     </div>
 </template>
 
@@ -15,6 +18,11 @@
         components: {
             'logo-area': LogoArea,
             'title-area': TopTitle
+        },
+        methods: {
+            onBtnOpenMenu: function(e) {
+                this.$bus.$emit("openInventory", "");
+            }
         }
     }
 </script>
@@ -24,5 +32,17 @@
         width: 100%;
         height: 200px;
         background-color: #004444;
+    }
+</style>
+<style scoped>
+    .menu-btn-area {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+    }
+
+    button {
+        width: 100px;
+        height: 50px;
     }
 </style>
