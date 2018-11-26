@@ -37,11 +37,30 @@ class ServerManager {
         });
 
         this.io.on('connection', function(socket) {
-            console.log('socket connected');
+            sm.addUser(socket);
         });
     }
 
     update() {
+    }
+
+    addUser(socket) {
+        this.checkReconnect()
+            .then(this.getInfo);
+    }
+
+    checkReconnect() {
+        return new Promise(function(resolve, reject) {
+            console.log('checkReconnect');
+            resolve();
+        });
+    }
+
+    getInfo() {
+        return new Promise(function(resolve, reject) {
+            console.log('getInfo');
+            resolve();
+        });
     }
 }
 
