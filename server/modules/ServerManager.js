@@ -11,6 +11,7 @@ class ServerManager {
         console.log('ServerManager Init');
         this.http = http.Server(app);
         this.io = socketio(this.http);
+        this.mUsers = new Map();
         this.init();
     }
 
@@ -45,18 +46,33 @@ class ServerManager {
     }
 
     addUser(socket) {
-        this.checkReconnect()
-            .then(this.getInfo);
+        const id = socket.handshake.session.username;
+        if( this.checkReconnect(id) ) {
+            this.setReconnect(id);
+        }
     }
 
-    checkReconnect() {
-        return new Promise(function(resolve, reject) {
-            console.log('checkReconnect');
-            resolve();
-        });
+    checkReconnect(id) {
+        const sm = this;
+        console.log('checkReconnect');
+        const client = sm.mUsers.get(id);
+        if( !client ) {
+            return false;
+        }
+        else {
+            return true;
+        }
+
     }
 
-    getInfo() {
+    setReconnect(id) {
+        const client = this.mUsers.get(id);
+        client.socket = socket;
+        client.tLogout = 0;
+    }
+
+    getInfo(value) {
+        console.log(value);
         return new Promise(function(resolve, reject) {
             console.log('getInfo');
             resolve();
