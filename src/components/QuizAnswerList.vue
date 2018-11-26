@@ -44,8 +44,8 @@
     }
 
     .answer {
-        margin: 20px 4px;
-        font-size: 20px;
+        margin: 60px 4px;
+        font-size: 26px;
         cursor: pointer;
     }
 </style>

@@ -30,7 +30,7 @@
 <style>
     .top {
         width: 100%;
-        height: 200px;
+        height: 300px;
         background-color: #004444;
     }
 </style>

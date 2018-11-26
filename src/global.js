@@ -8,6 +8,7 @@ import P from '../common/protocol';
 class Global {
     constructor() {
         console.log(`Global value created`);
+        this.socket = io();
     }
 
     setQuizInfo() {
