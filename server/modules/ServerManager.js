@@ -4,13 +4,16 @@
 'use strict'
 const http = require('http');
 const socketio = require('socket.io');
+const sharedsession = require("express-socket.io-session");
 const Promise = require('promise');
+const P = require('../../common/protocol');
 
 class ServerManager {
     constructor(app) {
         console.log('ServerManager Init');
         this.http = http.Server(app);
         this.io = socketio(this.http);
+        this.io.use(sharedsession(app.session));
         this.mUsers = new Map();
         this.init();
     }
@@ -45,8 +48,31 @@ class ServerManager {
     update() {
     }
 
+    sendPacket( socket, protocol, data ) {
+        socket.emit(protocol, data);
+    }
+
+    setListener( socket ) {
+        const sm = this;
+        socket.on(P.SOCK.LoginRequest, function(packet) { sm.onLoginRequest(socket, packet); })
+    }
+
+    onLoginRequest( socket, packet ) {
+        try {
+            console.log('onLoginRequest');
+            this.sendPacket(socket, P.SOCK.LoginRequest, {});
+        }catch(e) {
+
+        }
+    }
+
     addUser(socket) {
         const id = socket.handshake.session.username;
+        this.setListener(socket);
+        if( !id ) {
+            this.sendPacket(socket, P.SOCK.NotLogined, {});
+            return;
+        }
         if( this.checkReconnect(id) ) {
             this.setReconnect(id);
         }

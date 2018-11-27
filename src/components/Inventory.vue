@@ -33,7 +33,6 @@
         methods: {
             onCloseInventory: function() {
                 this.$bus.$emit(P.CloseInventory, "");
-                G.setQuizInfo();
             }
         },
         created: function() {

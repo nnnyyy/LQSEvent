@@ -3,7 +3,11 @@
  */
 const VueBus = {
     CloseInventory: "CloseInentory",
-    StartTimer: "StartTimer"
+    StartTimer: "StartTimer",
+    SOCK: {
+        NotLogined: "NotLogined",
+        LoginRequest: "LoginRequest"
+    }
 };
 
 module.exports = VueBus;

@@ -1,5 +1,5 @@
 <template>
-    <div class="quiztimer" :style="mainStyle">
+    <div class="quiztimer" :style="mainStyle" v-show="visible">
         <div class="line" :style="lineStyle">
         </div>
     </div>
@@ -20,7 +20,8 @@
                     width: "100%"
 
                 },
-                tLimitMs: 0
+                tLimitMs: 0,
+                visible: true
             };
         },
         created: function() {
@@ -32,6 +33,8 @@
             this.lineStyle.backgroundColor = this.lineColor;
 
             this.$bus.$on(P.StartTimer, this.onStartTimer);
+            this.$bus.$on(P.SOCK.NotLogined, this.onNotLogined);
+            this.$bus.$on(P.SOCK.LoginRequest, this.onLoginRequest);
         },
         methods: {
             onStartTimer: function(tLimit) {
@@ -47,6 +50,12 @@
                         clearInterval(v.intervalId);
                     }
                 }, 30);
+            },
+            onNotLogined: function() {
+                this.visible = false;
+            },
+            onLoginRequest: function() {
+                this.visible = true;
             },
             getElapsed: function() {
                 const tCur = new Date();

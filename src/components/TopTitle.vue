@@ -8,6 +8,8 @@
 </template>
 
 <script>
+    import P from '../../common/protocol.js';
+
     export default {
         data: function () {
             return {
@@ -16,12 +18,16 @@
         },
         created: function() {
             const v = this;
-            this.$bus.$on('QuizInfo', function(info) {
-                const infoParsed = JSON.parse(info);
-                v.titleText = infoParsed.q;
-            });
+            this.$bus.$on(P.SOCK.NotLogined, this.onNotLogined);
+            this.$bus.$on(P.SOCK.LoginRequest, this.onLoginRequest);
         },
-        methods: function() {
+        methods: {
+            onNotLogined: function() {
+                this.titleText = "로그인 후에 이용 해 주세요"
+            },
+            onLoginRequest: function() {
+                this.titleText = "다음 문제를 기다리고 있습니다"
+            }
         }
     }
 </script>

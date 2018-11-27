@@ -1,5 +1,5 @@
 <template>
-    <div class="quizanswerlist">
+    <div class="quizanswerlist" v-show="visible">
         <ul>
             <template v-for="item in answers">
                 <li>
@@ -13,10 +13,13 @@
 </template>
 
 <script>
+    import P from '../../common/protocol.js';
+
     export default {
         data: function () {
             return {
-                answers: []
+                answers: [],
+                visible: true
             };
         },
         created: function() {
@@ -26,13 +29,16 @@
             this.answers.push(item);
 
             const v = this;
-            this.$bus.$on('QuizInfo', function(info) {
-                const infoParsed = JSON.parse(info);
-                v.answers = [];
-                v.answers.push({number: 1, answer: infoParsed.a[0]});
-                v.answers.push({number: 2, answer: infoParsed.a[1]});
-                v.answers.push({number: 3, answer: infoParsed.a[2]});
-            });
+            this.$bus.$on(P.SOCK.NotLogined, this.onNotLogined);
+            this.$bus.$on(P.SOCK.LoginRequest, this.onLoginRequest);
+        },
+        methods: {
+            onNotLogined: function() {
+                this.visible = false;
+            },
+            onLoginRequest: function() {
+                this.visible = true;
+            }
         }
     }
 </script>

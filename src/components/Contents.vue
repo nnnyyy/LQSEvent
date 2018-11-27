@@ -13,6 +13,8 @@
         <quiz-answer-list></quiz-answer-list>
         <quiz-timer width="400" align="center" lineColor="#770077"></quiz-timer>
 
+        <login-form></login-form>
+
         <!-- 화면 우측 인벤토리 -->
         <inventory></inventory>
     </div>
@@ -24,6 +26,7 @@
     import Inventory from './Inventory.vue';
     import QuizTimer from './QuizTimer.vue';
     import QuizAnswerList from './QuizAnswerList.vue';
+    import LoginForm from './LoginForm.vue';
     import $ from 'jquery';
 
     import G from '../global';
@@ -44,7 +47,8 @@
             'post-card': PostCard,
             'inventory': Inventory,
             'quiz-timer': QuizTimer,
-            'quiz-answer-list': QuizAnswerList
+            'quiz-answer-list': QuizAnswerList,
+            'login-form': LoginForm
         },
         methods: {
             checkScrollToEnd: function() {
@@ -52,7 +56,7 @@
             },
             onScroll: function(o) {
                 if( $(window).scrollTop() + $(window).height() === $(document).height() ) {
-                    this.items.push({title: "9시 원픽 당첨자", desc: "자동로그", regdate: '2018-11-23 08:10:00',type: 1});
+                    //this.items.push({title: "9시 원픽 당첨자", desc: "자동로그", regdate: '2018-11-23 08:10:00',type: 1});
                     //requestNextPost();
                 }
             }
