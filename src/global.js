@@ -34,7 +34,12 @@ class Global {
 
     onLoginRequest( packet ) {
         const v = new Vue();
-        v.$bus.$emit(P.SOCK.LoginRequest, "");
+        console.log("onLoginRequest", packet);
+        if( packet.ret == 0 )
+            v.$bus.$emit(P.SOCK.LoginRequest, "");
+        else {
+            alert('아이디 또는 비밀번호가 맞지 않습니다');
+        }
     }
 
     sendPacket( protocol, packetData ) {

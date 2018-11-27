@@ -20,7 +20,7 @@
         components: {},
         methods: {
             onBtnLogin: function(e) {
-                G.sendPacket(P.SOCK.LoginRequest, {});
+                G.sendPacket(P.SOCK.LoginRequest, {id: 'ididid', pw: 'pwpwpw'});
             },
             onNotLogined: function() {
                 this.visible = true;

@@ -7,6 +7,7 @@ const socketio = require('socket.io');
 const sharedsession = require("express-socket.io-session");
 const Promise = require('promise');
 const P = require('../../common/protocol');
+const DBHelper = require('./DBHelper');
 
 class ServerManager {
     constructor(app) {
@@ -41,7 +42,7 @@ class ServerManager {
         });
 
         this.io.on('connection', function(socket) {
-            sm.addUser(socket);
+            sm.connectUser(socket);
         });
     }
 
@@ -59,14 +60,33 @@ class ServerManager {
 
     onLoginRequest( socket, packet ) {
         try {
-            console.log('onLoginRequest');
-            this.sendPacket(socket, P.SOCK.LoginRequest, {});
+            let ip = socket.handshake.address.substr(7);
+            if( socket.handshake.headers['x-real-ip'] != null ) {
+                ip = socket.handshake.headers['x-real-ip'];
+            }
+
+            const sm = this;
+            this.login(packet.id, packet.pw, ip)
+            .then(function(result) {
+                sm.sendPacket(socket, P.SOCK.LoginRequest, result);
+            })
+            .catch(function(err) {
+            });
         }catch(e) {
 
         }
     }
 
-    addUser(socket) {
+    login( id, pw, ip ) {
+        return new Promise(function(resolve, reject) {
+            DBHelper.login( id, pw, ip, function(result) {
+                resolve(result);
+            });
+        });
+    }
+
+    //  유저가 접속합니다.
+    connectUser(socket) {
         const id = socket.handshake.session.username;
         this.setListener(socket);
         if( !id ) {
