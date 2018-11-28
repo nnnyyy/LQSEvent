@@ -9,6 +9,7 @@ const Promise = require('promise');
 const P = require('../../common/protocol');
 const DBHelper = require('./DBHelper');
 const User = require('./User');
+const AutoQuizMan = require('./AutoQuizManager');
 
 class ServerManager {
     constructor(app) {
@@ -24,6 +25,7 @@ class ServerManager {
     init() {
         const sm = this;
         new Promise(function(resolve, reject) {
+            AutoQuizMan.init( sm );
             resolve();
         })
         .then(function() {
@@ -67,6 +69,9 @@ class ServerManager {
                 sm.mUsers.delete(sm.aDisconnect[idx]);
             }
 
+            //  자동 퀴즈 매니저
+            AutoQuizMan.update( tCur );
+
         }catch(e) {
 
         }
@@ -74,6 +79,10 @@ class ServerManager {
 
     sendPacket( socket, protocol, data ) {
         socket.emit(protocol, data);
+    }
+
+    broadcastPacket( protocol, data ) {
+        this.io.sockets.in('auth').emit( protocol, data );
     }
 
     setPreListener( socket ) {
@@ -143,6 +152,8 @@ class ServerManager {
         socket.handshake.session.userdata = { id: ret.id };
         socket.handshake.session.save();
 
+        socket.join('auth');
+
         return new Promise(function(resolve, reject) {
             const newUser = new User(socket);
             sm.mUsers.set(ret.id, newUser);
@@ -185,6 +196,8 @@ class ServerManager {
     }
 
     setReconnect(socket, id) {
+        socket.join('auth');
+
         const client = this.mUsers.get(id);
         client.socket = socket;
         client.tLogout = 0;

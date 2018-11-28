@@ -20,6 +20,10 @@
             const v = this;
             this.$bus.$on(P.SOCK.NotLogined, this.onNotLogined);
             this.$bus.$on(P.SOCK.LoginRequest, this.onLoginRequest);
+            this.$bus.$on(P.SOCK.TestPacket, function( data ) {
+                const packet = JSON.parse(data);
+                v.titleText = packet.title;
+            });
         },
         methods: {
             onNotLogined: function() {

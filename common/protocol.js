@@ -7,7 +7,8 @@ const VueBus = {
     SOCK: {
         NotLogined: "NotLogined",
         LoginRequest: "LoginRequest",
-        Disconnect: "disconnect"
+        Disconnect: "disconnect",
+        TestPacket: "TestPacket"
     }
 };
 

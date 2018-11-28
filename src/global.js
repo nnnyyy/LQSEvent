@@ -16,6 +16,7 @@ class Global {
         const g = this;
         this.socket.on(P.SOCK.NotLogined, function(packet) { g.onNotLogined(packet); });
         this.socket.on(P.SOCK.LoginRequest, function(packet) { g.onLoginRequest(packet); });
+        this.socket.on(P.SOCK.TestPacket, function(packet) { g.onTestPacket(packet); });
     }
 
     setQuizInfo() {
@@ -40,6 +41,11 @@ class Global {
         else {
             alert('아이디 또는 비밀번호가 맞지 않습니다');
         }
+    }
+
+    onTestPacket( packet ) {
+        const v = new Vue();
+        v.$bus.$emit(P.SOCK.TestPacket, JSON.stringify( packet ));
     }
 
     sendPacket( protocol, packetData ) {
