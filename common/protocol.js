@@ -6,7 +6,8 @@ const VueBus = {
     StartTimer: "StartTimer",
     SOCK: {
         NotLogined: "NotLogined",
-        LoginRequest: "LoginRequest"
+        LoginRequest: "LoginRequest",
+        Disconnect: "disconnect"
     }
 };
 

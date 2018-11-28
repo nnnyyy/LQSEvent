@@ -16,8 +16,8 @@ const client = redis.createClient();
 
 var sessionMiddleware = session({
     secret: 'dhkddPtlra',
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     store: new redisStore({
         host: '127.0.0.1',
         port: 6379,

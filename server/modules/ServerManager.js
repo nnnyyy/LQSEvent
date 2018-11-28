@@ -8,14 +8,16 @@ const sharedsession = require("express-socket.io-session");
 const Promise = require('promise');
 const P = require('../../common/protocol');
 const DBHelper = require('./DBHelper');
+const User = require('./User');
 
 class ServerManager {
     constructor(app) {
         console.log('ServerManager Init');
         this.http = http.Server(app);
         this.io = socketio(this.http);
-        this.io.use(sharedsession(app.session));
+        this.io.use(sharedsession(app.session, {autoSave: true}));
         this.mUsers = new Map();
+        this.aDisconnect = [];
         this.init();
     }
 
@@ -47,15 +49,41 @@ class ServerManager {
     }
 
     update() {
+        const sm = this;
+        const tCur = new Date();
+        try {
+            sm.aDisconnect = [];
+
+            this.mUsers.forEach(function(item, id) {
+                if( !item.socket.connected ) {
+                    if( tCur - item.tLogout >= 10 * 1000 ) {
+                        sm.aDisconnect.push(id);
+                    }
+                }
+            });
+
+            //  실제 Delete 처리
+            for( let idx in sm.aDisconnect ) {
+                sm.mUsers.delete(sm.aDisconnect[idx]);
+            }
+
+        }catch(e) {
+
+        }
     }
 
     sendPacket( socket, protocol, data ) {
         socket.emit(protocol, data);
     }
 
-    setListener( socket ) {
+    setPreListener( socket ) {
         const sm = this;
         socket.on(P.SOCK.LoginRequest, function(packet) { sm.onLoginRequest(socket, packet); })
+    }
+
+    setPostListener( socket ) {
+        const sm = this;
+        socket.on(P.SOCK.Disconnect, function() { sm.onDisconnect(socket); })
     }
 
     onLoginRequest( socket, packet ) {
@@ -66,41 +94,86 @@ class ServerManager {
             }
 
             const sm = this;
-            this.login(packet.id, packet.pw, ip)
-            .then(function(result) {
-                sm.sendPacket(socket, P.SOCK.LoginRequest, result);
+            this.login(socket, packet.id, packet.pw, ip)
+            .then(this.createUser)
+            .then(function(ret) {
+                sm.sendPacket(socket, P.SOCK.LoginRequest, ret.result);
             })
             .catch(function(err) {
+                    console.log(err);
             });
         }catch(e) {
 
         }
     }
 
-    login( id, pw, ip ) {
+    onDisconnect(sock) {
+        const sm = this;
+        try {
+            const userdata = sock.handshake.session.userdata;
+            if( !userdata ) {
+                //  있을 수가 없어
+                return;
+            }
+
+            const user = sm.mUsers.get(userdata.id);
+            user.tLogout = new Date();
+
+        }catch(e) {
+
+        }
+    }
+
+    login( socket, id, pw, ip ) {
+        let ret = { sock: socket };
+        const sm = this;
         return new Promise(function(resolve, reject) {
             DBHelper.login( id, pw, ip, function(result) {
-                resolve(result);
+                ret.id = id;
+                ret.sm = sm;
+                ret.result = result;
+                resolve(ret);
             });
+        });
+    }
+
+    createUser( ret ) {
+        const sm = ret.sm;
+        const socket = ret.sock;
+        socket.handshake.session.userdata = { id: ret.id };
+        socket.handshake.session.save();
+
+        return new Promise(function(resolve, reject) {
+            const newUser = new User(socket);
+            sm.mUsers.set(ret.id, newUser);
+            console.log('createUser', socket.handshake.session.userdata);
+            resolve(ret);
         });
     }
 
     //  유저가 접속합니다.
     connectUser(socket) {
-        const id = socket.handshake.session.username;
-        this.setListener(socket);
-        if( !id ) {
+        const userdata = socket.handshake.session.userdata;
+        this.setPreListener(socket);
+        if( !userdata ) {
             this.sendPacket(socket, P.SOCK.NotLogined, {});
             return;
         }
-        if( this.checkReconnect(id) ) {
-            this.setReconnect(id);
+
+        this.setPostListener(socket);
+
+        if( this.checkReconnect(userdata.id) ) {
+            this.setReconnect(socket, userdata.id);
+        }
+        else {
+            delete socket.handshake.session.userdata;
+            socket.handshake.session.save();
+            this.sendPacket(socket, P.SOCK.NotLogined, {});
         }
     }
 
     checkReconnect(id) {
         const sm = this;
-        console.log('checkReconnect');
         const client = sm.mUsers.get(id);
         if( !client ) {
             return false;
@@ -111,7 +184,7 @@ class ServerManager {
 
     }
 
-    setReconnect(id) {
+    setReconnect(socket, id) {
         const client = this.mUsers.get(id);
         client.socket = socket;
         client.tLogout = 0;

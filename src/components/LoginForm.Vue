@@ -1,6 +1,20 @@
 <template>
     <div :style="style" v-show="visible">
-        <button @click="onBtnLogin">로그인</button>
+        <table style="margin: 0 auto;">
+            <tr>
+                <td>아이디</td>
+                <td><input type="text" v-model="iid" /></td>
+            </tr>
+            <tr>
+                <td>비밀번호</td>
+                <td><input type="password" v-model="ipw" /></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button @click="onBtnLogin" style="width:100%; height: 50px;">로그인</button>
+                </td>
+            </tr>
+        </table>
     </div>
 </template>
 
@@ -11,16 +25,18 @@
     export default {
         data: function () {
             return {
+                iid:'',
+                ipw:'',
                 style: {
                     textAlign: "center",
                 },
-                visible: true
+                visible: false
             };
         },
         components: {},
         methods: {
             onBtnLogin: function(e) {
-                G.sendPacket(P.SOCK.LoginRequest, {id: 'ididid', pw: 'pwpwpw'});
+                G.sendPacket(P.SOCK.LoginRequest, {id: this.iid, pw: this.ipw });
             },
             onNotLogined: function() {
                 this.visible = true;
@@ -40,5 +56,15 @@
 
 </style>
 <style scoped>
+    * {
+        font-size: 25px;
+    }
 
+    td {
+        padding: 4px;
+    }
+
+    input {
+        height:40px;
+    }
 </style>
