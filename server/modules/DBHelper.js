@@ -25,7 +25,29 @@ class DBHelper {
                 cb({id: data.id, nick: data.nick, auth: data.auth_state, adminMemberVal: data.adminMemberVal, ret: ret});
             });
         }catch(err) {
-            Log.logger.debug('DB Failed - login');
+
+            cb({ret: -99});
+        }
+    }
+
+    getRandQuiz(cb) {
+        try {
+            this.sql.query("select * from quiz where quiz_idx >= 4 order by rand() limit 0,1", function(err, rows) {
+                if(err) {
+                    console.log('error : ' + err);
+                    cb({ret: -99});
+                    return;
+                }
+
+                var data = [];
+                for( var i  = 0; i < rows.length ; ++i ) {
+                    var d = rows[i];
+                    data.push({idx: d.quiz_idx, question: d.question ,answer: [d.answer1, d.answer2, d.answer3], collect: d.collect_idx});
+                }
+                cb({ret:0, quizdata: data[0]});
+            });
+        }catch(err) {
+
             cb({ret: -99});
         }
     }

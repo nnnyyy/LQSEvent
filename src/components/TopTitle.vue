@@ -20,9 +20,9 @@
             const v = this;
             this.$bus.$on(P.SOCK.NotLogined, this.onNotLogined);
             this.$bus.$on(P.SOCK.LoginRequest, this.onLoginRequest);
-            this.$bus.$on(P.SOCK.TestPacket, function( data ) {
+            this.$bus.$on(P.SOCK.QuizData, function( data ) {
                 const packet = JSON.parse(data);
-                v.titleText = packet.title;
+                v.titleText = packet.question;
             });
         },
         methods: {
@@ -49,7 +49,8 @@
     .toptitle-inner {
         display: inline-block;
         background-color: inherit;
-        color: #cacaca;
+        color: #ffffff;
+        font-weight: 900;
         position: relative;
         text-align: center;
         font-size: 28px;

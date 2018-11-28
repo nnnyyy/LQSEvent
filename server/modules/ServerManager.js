@@ -107,6 +107,10 @@ class ServerManager {
             .then(this.createUser)
             .then(function(ret) {
                 sm.sendPacket(socket, P.SOCK.LoginRequest, ret.result);
+
+                if( AutoQuizMan.isQuizRunning() ) {
+                    sm.sendPacket(socket, P.SOCK.QuizData, AutoQuizMan.getCurQuizData());
+                }
             })
             .catch(function(err) {
                     console.log(err);
@@ -201,14 +205,10 @@ class ServerManager {
         const client = this.mUsers.get(id);
         client.socket = socket;
         client.tLogout = 0;
-    }
 
-    getInfo(value) {
-        console.log(value);
-        return new Promise(function(resolve, reject) {
-            console.log('getInfo');
-            resolve();
-        });
+        if( AutoQuizMan.isQuizRunning() ) {
+            this.sendPacket(socket, P.SOCK.QuizData, AutoQuizMan.getCurQuizData());
+        }
     }
 }
 

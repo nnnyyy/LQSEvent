@@ -31,7 +31,7 @@
     .top {
         width: 100%;
         height: 300px;
-        background-color: #004444;
+        background-color: #3e58a7;
     }
 </style>
 <style scoped>

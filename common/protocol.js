@@ -8,7 +8,8 @@ const VueBus = {
         NotLogined: "NotLogined",
         LoginRequest: "LoginRequest",
         Disconnect: "disconnect",
-        TestPacket: "TestPacket"
+        QuizData: "QuizData",
+        QuizDataResult: "QuizDataResult"
     }
 };
 

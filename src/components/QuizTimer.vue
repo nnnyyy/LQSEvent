@@ -37,10 +37,14 @@
             this.$bus.$on(P.SOCK.LoginRequest, this.onLoginRequest);
         },
         methods: {
-            onStartTimer: function(tLimit) {
+            onStartTimer: function(data) {
+                console.log(data);
+                const tLimit = data.max;
                 const v = this;
                 this.tStart = new Date();
+                this.tStart -= (tLimit - data.remain);
                 this.tLimitMs = tLimit;
+
                 this.intervalId = setInterval(function() {
                     const tElapsed = v.getElapsed();
                     v.tElapsed = tElapsed;

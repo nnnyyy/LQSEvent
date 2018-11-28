@@ -16,7 +16,8 @@ class Global {
         const g = this;
         this.socket.on(P.SOCK.NotLogined, function(packet) { g.onNotLogined(packet); });
         this.socket.on(P.SOCK.LoginRequest, function(packet) { g.onLoginRequest(packet); });
-        this.socket.on(P.SOCK.TestPacket, function(packet) { g.onTestPacket(packet); });
+        this.socket.on(P.SOCK.QuizData, function(packet) { g.onQuizData(packet); });
+        this.socket.on(P.SOCK.QuizDataResult, function(packet) { g.onQuizDataResult(packet); });
     }
 
     setQuizInfo() {
@@ -43,9 +44,17 @@ class Global {
         }
     }
 
-    onTestPacket( packet ) {
+    onQuizData( packet ) {
         const v = new Vue();
-        v.$bus.$emit(P.SOCK.TestPacket, JSON.stringify( packet ));
+        v.$bus.$emit(P.SOCK.QuizData, JSON.stringify( packet ));
+        if( packet.state == 0 ) {
+            v.$bus.$emit(P.StartTimer, { remain: packet.tRemain, max: 10000 });
+        }
+    }
+
+    onQuizDataResult( packet ) {
+        const v = new Vue();
+        v.$bus.$emit(P.SOCK.QuizDataResult, JSON.stringify( packet ));
     }
 
     sendPacket( protocol, packetData ) {

@@ -11,7 +11,7 @@
         </template>
         -->
         <quiz-answer-list></quiz-answer-list>
-        <quiz-timer width="400" align="center" lineColor="#770077"></quiz-timer>
+        <quiz-timer width="400" align="center" lineColor="#3e58a7"></quiz-timer>
 
         <login-form></login-form>
 
