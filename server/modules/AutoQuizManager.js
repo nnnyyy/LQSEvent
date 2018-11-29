@@ -14,6 +14,8 @@ class AutoQuizManager {
     init( sm ) {
         this.serverMan = sm;
         this.isRunning = false;
+        this.mUserSelect = new Map();
+        this.prevQuizObjStr = "";
     }
 
     update(tCur) {
@@ -28,8 +30,12 @@ class AutoQuizManager {
                 })
                 .then(function() {
                     let quizObj = aqm.curQuizObject;
+                        if( aqm.prevQuizObjStr === "" ) {
+                            aqm.prevQuizObjStr = JSON.stringify(aqm.curQuizObject);
+                        }
                     quizObj.tRemain = 10000;
                     quizObj.state = 0;
+                    aqm.mUserSelect.clear();
                     aqm.serverMan.broadcastPacket( P.SOCK.QuizData, quizObj );
                 })
                 .catch(function(err) {
@@ -57,6 +63,24 @@ class AutoQuizManager {
                             this.tStart = tCur;
                             const quizObj = aqm.curQuizObject;
                             aqm.serverMan.broadcastPacket( P.SOCK.QuizDataResult, {collect: quizObj.collect} );
+                            const curQuizObjStr = JSON.stringify(quizObj);
+
+                            //  정답자 콤보 처리
+                            this.mUserSelect.forEach(function(answerIdx, id ) {
+                                let user = aqm.serverMan.getUser( id );
+                                const isComboInit = aqm.prevQuizObjStr !== user.lastQuizObjectStr;
+
+                                user.lastQuizObjectStr = curQuizObjStr;
+                                if( !user ) return;
+                                if( quizObj.collect == answerIdx && !isComboInit ) {
+                                    user.quizCombo++;
+                                }
+                                else {
+                                    user.quizCombo = 0;
+                                }
+                            });
+
+                            aqm.prevQuizObjStr = curQuizObjStr;
                         }
                         break;
                     }
@@ -64,7 +88,7 @@ class AutoQuizManager {
                     //  정답 발표 후
                     case 2:
                     {
-                        if( tCur - this.tStart >= 2500 ) {
+                        if( tCur - this.tStart >= 5000 ) {
                             this.state = 0;
                             this.isRunning = false;
                         }
@@ -95,6 +119,19 @@ class AutoQuizManager {
         cur.state = this.state;
         cur.tRemain = ( 10000 - (tCur - this.tStart) );
         return cur;
+    }
+
+    onQuizAnswer(id, answerIdx) {
+        try {
+            if( this.mUserSelect.has(id) ) {
+                return;
+            }
+
+            this.mUserSelect.set(id, answerIdx);
+        }
+        catch(e) {
+
+        }
     }
 }
 

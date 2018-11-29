@@ -15,14 +15,14 @@ const redis = require('redis');
 const client = redis.createClient();
 
 var sessionMiddleware = session({
-    secret: 'dhkddPtlra',
+    secret: 'ghQkdaos',
     resave: true,
     saveUninitialized: true,
     store: new redisStore({
         host: '127.0.0.1',
         port: 6379,
         client: client,
-        prefix: "session-jamlive.net:a",
+        prefix: "session-quiz.jamlive.net",
         db: 0
     })
 });

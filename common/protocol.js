@@ -9,7 +9,8 @@ const VueBus = {
         LoginRequest: "LoginRequest",
         Disconnect: "disconnect",
         QuizData: "QuizData",
-        QuizDataResult: "QuizDataResult"
+        QuizDataResult: "QuizDataResult",
+        QuizAnswer: "QuizAnswer"
     }
 };
 

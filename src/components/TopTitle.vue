@@ -1,19 +1,23 @@
 <template>
     <div style="margin: 0 auto; width: 800px; height: inherit; background-color: inherit;">
         <div class="toptitle">
-            <div class="toptitle-inner" v-html="titleText">
-            </div>
+            <transition name="fade">
+                <div class="toptitle-inner" v-html="titleText" v-if="show">
+                </div>
+            </transition>
         </div>
     </div>
 </template>
 
 <script>
     import P from '../../common/protocol.js';
+    import G from '../global';
 
     export default {
         data: function () {
             return {
-                titleText: "다음 중 잘못 표기 된 것은 무엇일까요?"
+                titleText: "다음 중 잘못 표기 된 것은 무엇일까요?",
+                show: true
             };
         },
         created: function() {
@@ -54,5 +58,15 @@
         position: relative;
         text-align: center;
         font-size: 28px;
+    }
+</style>
+
+<style scoped>
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s;
+    }
+
+    .fade-enter, .fade-leave-to {
+        opacity: 0;
     }
 </style>

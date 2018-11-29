@@ -93,6 +93,7 @@ class ServerManager {
     setPostListener( socket ) {
         const sm = this;
         socket.on(P.SOCK.Disconnect, function() { sm.onDisconnect(socket); })
+        socket.on(P.SOCK.QuizAnswer, function(packet) { sm.onQuizAnswer(socket, packet); })
     }
 
     onLoginRequest( socket, packet ) {
@@ -137,6 +138,23 @@ class ServerManager {
         }
     }
 
+    onQuizAnswer(sock, packet) {
+        const sm = this;
+        try {
+            const userdata = sock.handshake.session.userdata;
+            if( !userdata ) {
+                //  있을 수가 없어
+                return;
+            }
+
+            const user = sm.mUsers.get(userdata.id);
+            AutoQuizMan.onQuizAnswer(user.id, packet.answer);
+
+        }catch(e) {
+
+        }
+    }
+
     login( socket, id, pw, ip ) {
         let ret = { sock: socket };
         const sm = this;
@@ -159,9 +177,9 @@ class ServerManager {
         socket.join('auth');
 
         return new Promise(function(resolve, reject) {
-            const newUser = new User(socket);
+            let newUser = new User(socket);
+            newUser.id = ret.id;
             sm.mUsers.set(ret.id, newUser);
-            console.log('createUser', socket.handshake.session.userdata);
             resolve(ret);
         });
     }
@@ -209,6 +227,10 @@ class ServerManager {
         if( AutoQuizMan.isQuizRunning() ) {
             this.sendPacket(socket, P.SOCK.QuizData, AutoQuizMan.getCurQuizData());
         }
+    }
+
+    getUser( id ) {
+        return this.mUsers.get( id );
     }
 }
 

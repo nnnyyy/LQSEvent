@@ -3,7 +3,7 @@
         <ul>
             <template v-for="item in answers">
                 <li>
-                    <div class="answer" :style="item.style">
+                    <div class="answer" :style="item.style" @click="onBtnSelectAnswer(item.number-1)">
                         {{item.number}}. {{item.answer}}
                     </div>
                 </li>
@@ -14,12 +14,14 @@
 
 <script>
     import P from '../../common/protocol.js';
+    import G from '../global';
 
     export default {
         data: function () {
             return {
                 answers: [],
-                visible: true
+                visible: true,
+                selectable: false
             };
         },
         created: function() {
@@ -34,9 +36,10 @@
             this.$bus.$on(P.SOCK.QuizData, function( data ) {
                 const packet = JSON.parse(data);
                 v.answers = [];
-                v.answers.push({number: 1, answer: packet.answer[0], style: {}});
-                v.answers.push({number: 2, answer: packet.answer[1], style: {}});
-                v.answers.push({number: 3, answer: packet.answer[2], style: {}});
+                v.answers.push({number: 1, answer: packet.answer[0], style: {"backgroundColor": "inherit"}});
+                v.answers.push({number: 2, answer: packet.answer[1], style: {"backgroundColor": "inherit"}});
+                v.answers.push({number: 3, answer: packet.answer[2], style: {"backgroundColor": "inherit"}});
+                v.selectable = true;
             });
 
             this.$bus.$on(P.SOCK.QuizDataResult, function( data ) {
@@ -53,6 +56,13 @@
             },
             onLoginRequest: function() {
                 this.visible = true;
+            },
+            onBtnSelectAnswer: function( idx ) {
+                if( this.selectable ) {
+                    this.answers[idx].style["backgroundColor"] = "red";
+                    G.sendPacket(P.SOCK.QuizAnswer, {answer: idx});
+                    this.selectable = false;
+                }
             }
         }
     }
