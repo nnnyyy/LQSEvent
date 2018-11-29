@@ -3,7 +3,7 @@
         <ul>
             <template v-for="item in answers">
                 <li>
-                    <div class="answer" :style="item.style" @click="onBtnSelectAnswer(item.number-1)">
+                    <div class="answer" :class="{click: item.isClicked }" :style="item.style" @click="onBtnSelectAnswer(item.number-1)">
                         {{item.number}}. {{item.answer}}
                     </div>
                 </li>
@@ -25,7 +25,7 @@
             };
         },
         created: function() {
-            const item = { number: 1, answer: "보기", style: {} }
+            const item = { number: 1, answer: "보기", style: {}, isClicked: false }
             this.answers.push(item);
             this.answers.push(item);
             this.answers.push(item);
@@ -36,9 +36,9 @@
             this.$bus.$on(P.SOCK.QuizData, function( data ) {
                 const packet = JSON.parse(data);
                 v.answers = [];
-                v.answers.push({number: 1, answer: packet.answer[0], style: {"backgroundColor": "inherit"}});
-                v.answers.push({number: 2, answer: packet.answer[1], style: {"backgroundColor": "inherit"}});
-                v.answers.push({number: 3, answer: packet.answer[2], style: {"backgroundColor": "inherit"}});
+                v.answers.push({isClicked: false, number: 1, answer: packet.answer[0], style: {}});
+                v.answers.push({isClicked: false, number: 2, answer: packet.answer[1], style: {}});
+                v.answers.push({isClicked: false, number: 3, answer: packet.answer[2], style: {}});
                 v.selectable = true;
             });
 
@@ -59,7 +59,7 @@
             },
             onBtnSelectAnswer: function( idx ) {
                 if( this.selectable ) {
-                    this.answers[idx].style["backgroundColor"] = "red";
+                    this.answers[idx].isClicked = true;
                     G.sendPacket(P.SOCK.QuizAnswer, {answer: idx});
                     this.selectable = false;
                 }
@@ -88,5 +88,16 @@
         margin: 0 auto;
         font-size: 26px;
         cursor: pointer;
+        transition: 0.5s;
+    }
+
+    .answer:hover {
+        font-weight: 900;
+        font-size: 30px;
+        color: #3e58a7;
+    }
+
+    .click {
+        background-color: yellowgreen;
     }
 </style>
