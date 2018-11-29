@@ -1,5 +1,6 @@
 <template>
     <div class="top">
+        <user-info-bar></user-info-bar>
         <title-area></title-area>
         <div class="menu-btn-area">
             <button @click="onBtnOpenMenu">메뉴</button>
@@ -10,6 +11,7 @@
 <script>
     import LogoArea from './LogoArea.vue';
     import TopTitle from './TopTitle.vue';
+    import UserInfoBar from './UserInfoBar.vue';
 
     export default {
         data: function () {
@@ -17,7 +19,8 @@
         },
         components: {
             'logo-area': LogoArea,
-            'title-area': TopTitle
+            'title-area': TopTitle,
+            'user-info-bar': UserInfoBar
         },
         methods: {
             onBtnOpenMenu: function(e) {
