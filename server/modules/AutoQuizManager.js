@@ -72,12 +72,22 @@ class AutoQuizManager {
 
                                 user.lastQuizObjectStr = curQuizObjStr;
                                 if( !user ) return;
-                                if( quizObj.collect == answerIdx && !isComboInit ) {
-                                    user.quizCombo++;
+
+                                if( quizObj.collect == answerIdx ) {
+                                    if( !isComboInit ) {
+                                        user.quizCombo++;
+                                    }
+                                    else {
+                                        user.quizCombo = 1;
+                                    }
+
+                                    aqm.serverMan.sendPacket( user.socket, P.SOCK.AlertMsg, {msg: `${user.quizCombo} 콤보!`});
                                 }
                                 else {
                                     user.quizCombo = 0;
                                 }
+
+                                aqm.serverMan.sendPacket( user.socket, P.SOCK.ComboInfo, {cnt: user.quizCombo});
                             });
 
                             aqm.prevQuizObjStr = curQuizObjStr;
@@ -124,13 +134,14 @@ class AutoQuizManager {
     onQuizAnswer(id, answerIdx) {
         try {
             if( this.mUserSelect.has(id) ) {
+                console.log('already selected - ', id, answerIdx);
                 return;
             }
 
             this.mUserSelect.set(id, answerIdx);
         }
         catch(e) {
-
+            console.log(e);
         }
     }
 }

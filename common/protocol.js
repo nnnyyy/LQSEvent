@@ -4,13 +4,16 @@
 const VueBus = {
     CloseInventory: "CloseInentory",
     StartTimer: "StartTimer",
+    SetAlertMsg: "SetAlertMsg",
     SOCK: {
         NotLogined: "NotLogined",
         LoginRequest: "LoginRequest",
         Disconnect: "disconnect",
         QuizData: "QuizData",
         QuizDataResult: "QuizDataResult",
-        QuizAnswer: "QuizAnswer"
+        QuizAnswer: "QuizAnswer",
+        AlertMsg: "AlertMsg",
+        ComboInfo: "ComboInfo"
     }
 };
 

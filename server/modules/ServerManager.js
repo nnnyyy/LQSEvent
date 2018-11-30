@@ -151,7 +151,7 @@ class ServerManager {
             AutoQuizMan.onQuizAnswer(user.id, packet.answer);
 
         }catch(e) {
-
+            console.log(e);
         }
     }
 

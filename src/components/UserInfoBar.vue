@@ -3,24 +3,44 @@
         <div class="icon item">
             <img class="img-icon" :src="imageURL">
         </div>
-        <div class="id item">왕야옹</div>
-        <div class="id item">4레벨</div>
-        <div class="id item">25000점</div>
+        <div class="id item">{{nick}}</div>
+        <div class="id item">{{level}}레벨</div>
+        <div class="id item">{{point}}점</div>
 
-        <div class="id item">퀴즈 정답 {{comboCount}} 콤보</div>
+        <div class="id item">퀴즈 정답 {{comboCount}} 콤보중</div>
     </div>
 </template>
 
 <script>
+    import P from '../../common/protocol.js';
+    import G from '../global';
+
     export default {
         data: function () {
             return {
                imageURL: '/images/star0.png',
-                comboCount: 20
+                nick: '정보없음',
+                level: 0,
+                point: 0,
+                comboCount: 0
             };
         },
         components: {},
-        methods: {}
+        methods: {
+            setInfo: function( nick, level, point ) {
+                this.nick = nick;
+                this.level = level;
+                this.imageURL = '/images/star'+ level +'.png'
+                this.point = point;
+            }
+        },
+        created: function() {
+            const v = this;
+            this.setInfo( 'noname', 0, 0 );
+            this.$bus.$on(P.SOCK.ComboInfo, function( combo ) {
+                v.comboCount = combo;
+            });
+        }
     }
 </script>
 

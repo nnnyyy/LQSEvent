@@ -2,9 +2,6 @@
     <div class="top">
         <user-info-bar></user-info-bar>
         <title-area></title-area>
-        <div class="menu-btn-area">
-            <button @click="onBtnOpenMenu">메뉴</button>
-        </div>
     </div>
 </template>
 

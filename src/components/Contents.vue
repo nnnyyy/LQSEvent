@@ -14,9 +14,6 @@
         <quiz-timer width="400" align="center" lineColor="#3e58a7"></quiz-timer>
 
         <login-form></login-form>
-
-        <!-- 화면 우측 인벤토리 -->
-        <inventory></inventory>
     </div>
 </template>
 
@@ -45,7 +42,6 @@
         components: {
             'data-list': DataList,
             'post-card': PostCard,
-            'inventory': Inventory,
             'quiz-timer': QuizTimer,
             'quiz-answer-list': QuizAnswerList,
             'login-form': LoginForm
