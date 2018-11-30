@@ -13,7 +13,8 @@ const VueBus = {
         QuizDataResult: "QuizDataResult",
         QuizAnswer: "QuizAnswer",
         AlertMsg: "AlertMsg",
-        ComboInfo: "ComboInfo"
+        ComboInfo: "ComboInfo",
+        Logout: "Logout"
     }
 };
 

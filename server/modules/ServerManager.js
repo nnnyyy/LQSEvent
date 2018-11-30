@@ -71,7 +71,9 @@ class ServerManager {
 
             //  실제 Delete 처리
             for( let idx in sm.aDisconnect ) {
-                sm.mUsers.delete(sm.aDisconnect[idx]);
+                const id = sm.aDisconnect[idx];
+                const user = sm.getUser(id);
+                sm.logout(user.socket, user.id);
             }
 
             //  자동 퀴즈 매니저
@@ -97,8 +99,9 @@ class ServerManager {
 
     setPostListener( socket ) {
         const sm = this;
-        socket.on(P.SOCK.Disconnect, function() { sm.onDisconnect(socket); })
-        socket.on(P.SOCK.QuizAnswer, function(packet) { sm.onQuizAnswer(socket, packet); })
+        socket.on(P.SOCK.Disconnect, function() { sm.onDisconnect(socket); });
+        socket.on(P.SOCK.QuizAnswer, function(packet) { sm.onQuizAnswer(socket, packet); });
+        socket.on(P.SOCK.Logout, function(packet) { sm.onLogout(socket, packet); });
     }
 
     onLoginRequest( socket, packet ) {
@@ -161,6 +164,25 @@ class ServerManager {
         }
     }
 
+    onLogout(socket, packet) {
+        const sm = this;
+        try {
+            const userdata = socket.handshake.session.userdata;
+            if( !userdata ) {
+                //  있을 수가 없어
+                sm.sendPacket(socket, P.SOCK.NotLogined, { ret: 0});
+                return;
+            }
+
+            socket.leave('auth');
+
+            sm.logout( socket, userdata.id );
+            sm.sendPacket(socket, P.SOCK.NotLogined, { ret: 0});
+        }catch(e) {
+            console.log(e);
+        }
+    }
+
     login( socket, id, pw, ip ) {
         let ret = { sock: socket };
         const sm = this;
@@ -172,6 +194,12 @@ class ServerManager {
                 resolve(ret);
             });
         });
+    }
+
+    logout( socket, id ) {
+        this.mUsers.delete( id );
+        delete socket.handshake.session.userdata;
+        socket.handshake.session.save();
     }
 
     loadPoint( ret ) {
@@ -255,6 +283,7 @@ class ServerManager {
         user.tLogout = 0;
 
         this.sendPacket(socket, P.SOCK.LoginRequest, { ret:0, id: id, nick: user.nick, auth: user.level, adminMemberVal: user.adminLevel, point: user.point });
+        this.sendPacket(socket, P.SOCK.ComboInfo, {cnt: user.quizCombo, point: user.point});
 
         if( AutoQuizMan.isQuizRunning() ) {
             this.sendPacket(socket, P.SOCK.QuizData, AutoQuizMan.getCurQuizData());

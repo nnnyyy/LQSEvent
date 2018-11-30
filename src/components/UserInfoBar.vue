@@ -1,13 +1,17 @@
 <template>
     <div class="user-info-bar">
-        <div class="icon item">
+        <div class="icon item" v-show="logined">
             <img class="img-icon" :src="imageURL">
         </div>
-        <div class="id item">{{nick}}</div>
-        <div class="id item">{{level}}레벨</div>
-        <div class="id item">{{point}}점</div>
-
-        <div class="id item">퀴즈 정답 {{comboCount}} 콤보중</div>
+        <div class="id item" v-show="logined">{{nick}}</div>
+        <div class="id item" v-show="logined"> | </div>
+        <div class="id item" v-show="logined">{{level}}레벨</div>
+        <div class="id item" v-show="logined"> | </div>
+        <div class="id item" v-show="logined">{{point}}점</div>
+        <div class="id item" v-show="logined"> | </div>
+        <div class="id item" v-show="logined"> {{comboCount}} 콤보</div>
+        <div class="id item" v-show="logined"> | </div>
+        <div class="id item" v-show="logined"><button @click="onBtnLogout">로그아웃</button></div>
     </div>
 </template>
 
@@ -22,7 +26,8 @@
                 nick: '정보없음',
                 level: 0,
                 point: 0,
-                comboCount: 0
+                comboCount: 0,
+                logined: false
             };
         },
         components: {},
@@ -32,14 +37,31 @@
                 this.level = level;
                 this.imageURL = '/images/star'+ level +'.png'
                 this.point = point;
+                this.logined = true;
+            },
+            clear: function() {
+                this.nick = 'noname';
+                this.level = 0;
+                this.imageURL = '/images/star'+ 0 +'.png'
+                this.point = 0;
+                this.logined = false;
+            },
+            onBtnLogout: function(e) {
+                e.preventDefault();
+                G.sendPacket(P.SOCK.Logout, {});
             }
         },
         created: function() {
             const v = this;
-            this.setInfo( 'noname', 0, 0 );
+            this.clear();
             this.$bus.$on(P.SOCK.LoginRequest, function(info) {
                 v.setInfo(info.nick, info.auth, info.point);
             });
+
+            this.$bus.$on(P.SOCK.NotLogined, function(info) {
+                v.clear();
+            });
+
             this.$bus.$on(P.SOCK.ComboInfo, function( comboInfo ) {
                 v.comboCount = comboInfo.cnt;
                 v.point = comboInfo.point;
