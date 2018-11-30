@@ -1,15 +1,5 @@
 <template>
     <div id="contents">
-        <!--
-        <template v-for="item in items">
-            <post-card
-                    :title="item.title"
-                    :regdate="item.regdate"
-                    :desc="item.desc"
-                    :type="item.type"
-                    ></post-card>
-        </template>
-        -->
         <quiz-answer-list></quiz-answer-list>
         <quiz-timer width="400" align="center" lineColor="#3e58a7"></quiz-timer>
 

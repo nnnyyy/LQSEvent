@@ -1,6 +1,6 @@
 <template>
     <div :style="style" v-show="visible">
-        <table style="margin: 0 auto;">
+        <table style="margin: 0 auto;" :class="{lf_mobile: isMobile, lf_pc: !isMobile}">
             <tr>
                 <td>아이디</td>
                 <td><input type="text" v-model="iid" /></td>
@@ -28,9 +28,10 @@
                 iid:'',
                 ipw:'',
                 style: {
-                    textAlign: "center",
+                    textAlign: "center"
                 },
-                visible: false
+                visible: false,
+                isMobile: G.isMobile()
             };
         },
         components: {},
@@ -46,6 +47,9 @@
             }
         },
         created: function() {
+            if( G.isMobile() ) {
+                this.style.fontSize = "15px";
+            }
             this.$bus.$on(P.SOCK.NotLogined, this.onNotLogined);
             this.$bus.$on(P.SOCK.LoginRequest, this.onLoginRequest);
         }
@@ -56,15 +60,19 @@
 
 </style>
 <style scoped>
-    * {
-        font-size: 25px;
-    }
-
     td {
         padding: 4px;
     }
 
     input {
         height:40px;
+    }
+
+    .lf_mobile {
+        font-size: 15px;
+    }
+
+    .lf_pc {
+        font-size: 25px;
     }
 </style>

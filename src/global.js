@@ -22,6 +22,15 @@ class Global {
         this.socket.on(P.SOCK.ComboInfo, function(packet) { g.onComboInfo(packet); });
     }
 
+    isMobile() {
+        if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+            // is mobile..
+            return true;
+        }
+
+        return false;
+    }
+
     setQuizInfo() {
         const info = {q: "테스트 문제입니다", a: [ "테스트1", "테스트2", "테스트3" ]};
         this.vBus.$bus.$emit("QuizInfo", JSON.stringify(info));

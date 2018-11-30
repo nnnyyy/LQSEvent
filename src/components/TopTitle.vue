@@ -1,10 +1,20 @@
 <template>
-    <div style="margin: 0 auto; width: 800px; height: inherit; background-color: inherit;">
-        <div class="toptitle">
-            <transition name="fade">
-                <div class="toptitle-inner" v-html="titleText" v-if="show">
-                </div>
-            </transition>
+    <div style="background-color: inherit;">
+        <div v-if="!isMobile" style="margin: 0 auto; width: 800px; height: calc(250px - 42px); background-color: inherit;">
+            <div class="toptitle">
+                <transition name="fade">
+                    <div class="toptitle-inner" v-html="titleText" v-if="show">
+                    </div>
+                </transition>
+            </div>
+        </div>
+        <div v-else style="margin: 0 auto; width: 85%; height: calc(200px - 42px); background-color: inherit;">
+            <div class="toptitle">
+                <transition name="fade">
+                    <div class="toptitle-inner mobile" v-html="titleText" v-if="show">
+                    </div>
+                </transition>
+            </div>
         </div>
     </div>
 </template>
@@ -17,7 +27,8 @@
         data: function () {
             return {
                 titleText: "다음 중 잘못 표기 된 것은 무엇일까요?",
-                show: true
+                show: true,
+                isMobile: G.isMobile()
             };
         },
         created: function() {
@@ -58,6 +69,10 @@
         position: relative;
         text-align: center;
         font-size: 28px;
+    }
+
+    .mobile {
+        font-size: 18px;
     }
 </style>
 

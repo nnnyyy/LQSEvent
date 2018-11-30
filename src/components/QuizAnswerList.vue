@@ -1,9 +1,9 @@
 <template>
-    <div class="quizanswerlist" v-show="visible">
+    <div class="quizanswerlist" :class="{quizanswerlist_mobile: isMobile}" v-show="visible">
         <ul>
             <template v-for="item in answers">
-                <li>
-                    <div class="answer" :class="{click: item.isClicked }" :style="item.style" @click="onBtnSelectAnswer(item.number-1)">
+                <li :class="{qal_li_mobile: isMobile}">
+                    <div class="answer" :class="{click: item.isClicked, answermobile: isMobile }" :style="item.style" @click="onBtnSelectAnswer(item.number-1)">
                         {{item.number}}. {{item.answer}}
                     </div>
                 </li>
@@ -21,7 +21,8 @@
             return {
                 answers: [],
                 visible: true,
-                selectable: false
+                selectable: false,
+                isMobile: G.isMobile()
             };
         },
         created: function() {
@@ -74,11 +75,19 @@
         margin: 0 auto;
     }
 
+    .quizanswerlist_mobile {
+        width: 100%;
+    }
+
     ul {
     }
 
     li {
-        margin: 60px 4px;
+        margin: 36px 4px;
+    }
+
+    .qal_li_mobile {
+        margin: 10px 4px;
     }
 
     .answer {
@@ -91,10 +100,21 @@
         transition: 0.5s;
     }
 
+    .answermobile {
+        width: 100%;
+        font-size: 14px;
+        height: 50px;
+        line-height: 50px;
+    }
+
     .answer:hover {
         font-weight: 900;
         font-size: 30px;
         color: #3e58a7;
+    }
+
+    .answermobile:hover {
+        font-size: 16px;
     }
 
     .click {

@@ -7,6 +7,7 @@
 
 <script>
     import P from '../../common/protocol';
+    import G from '../global';
     export default {
         props: ['width', 'align','lineColor'],
         data: function () {
@@ -25,7 +26,13 @@
             };
         },
         created: function() {
-            this.mainStyle.width = this.width + 'px';
+            if( G.isMobile() ) {
+                this.mainStyle.width = "90%";
+            }
+            else {
+                this.mainStyle.width = this.width + 'px';
+            }
+
             if( this.align === "center") {
                 this.mainStyle.margin = "0 auto";
             }

@@ -1,5 +1,5 @@
 <template>
-    <div :class= "{ open: open }" class="alert-wnd">
+    <div :class= "{ open: open, alert_mobile: isMobile }" class="alert-wnd">
         <div class="inner" v-html="contents">
         </div>
     </div>
@@ -13,7 +13,8 @@
         data: function () {
             return {
                 open: false,
-                contents: '테스트'
+                contents: '테스트',
+                isMobile: G.isMobile()
             };
         },
         components: {},
@@ -58,6 +59,13 @@
         text-align: center;
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
+    }
+
+    .alert_mobile {
+        width: 100%;
+        opacity: 0.9;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
     }
 
     .open {
