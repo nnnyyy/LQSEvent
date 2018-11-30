@@ -38,7 +38,6 @@
         },
         methods: {
             onStartTimer: function(data) {
-                console.log(data);
                 const tLimit = data.max;
                 const v = this;
                 this.tStart = new Date();

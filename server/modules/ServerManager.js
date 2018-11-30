@@ -15,7 +15,12 @@ class ServerManager {
     constructor(app) {
         console.log('ServerManager Init');
         this.http = http.Server(app);
-        this.io = socketio(this.http);
+        this.io = socketio(this.http, {
+            origins: '*:*',
+            pingInterval: 5000,
+            pingTimeout: 10000,
+            transports: ['websocket','polling']
+        });
         this.io.use(sharedsession(app.session, {autoSave: true}));
         this.mUsers = new Map();
         this.aDisconnect = [];
@@ -105,6 +110,7 @@ class ServerManager {
 
             const sm = this;
             this.login(socket, packet.id, packet.pw, ip)
+            .then(this.loadPoint)
             .then(this.createUser)
             .then(function(ret) {
                 sm.sendPacket(socket, P.SOCK.LoginRequest, ret.result);
@@ -168,6 +174,20 @@ class ServerManager {
         });
     }
 
+    loadPoint( ret ) {
+        return new Promise(function(resolve, reject) {
+            DBHelper.getActivePoint(ret.id, function(result) {
+                if( result.ret != 0 ) {
+                    reject();
+                    return;
+                }
+
+                ret.result.point = result.point;
+                resolve(ret);
+            });
+        });
+    }
+
     createUser( ret ) {
         const sm = ret.sm;
         const socket = ret.sock;
@@ -179,6 +199,10 @@ class ServerManager {
         return new Promise(function(resolve, reject) {
             let newUser = new User(socket);
             newUser.id = ret.id;
+            newUser.nick = ret.result.nick;
+            newUser.level = ret.result.auth;
+            newUser.adminLevel = ret.result.adminMemberVal;
+            newUser.point = ret.result.point;
             sm.mUsers.set(ret.id, newUser);
             resolve(ret);
         });
@@ -189,7 +213,13 @@ class ServerManager {
         const userdata = socket.handshake.session.userdata;
         this.setPreListener(socket);
         if( !userdata ) {
-            this.sendPacket(socket, P.SOCK.NotLogined, {});
+            this.sendPacket(socket, P.SOCK.NotLogined, { ret: 0});
+            return;
+        }
+
+        const user = this.mUsers.get( userdata.id );
+        if( user && user.socket.connected ) {
+            this.sendPacket(socket, P.SOCK.NotLogined, {ret: -2});
             return;
         }
 
@@ -220,9 +250,11 @@ class ServerManager {
     setReconnect(socket, id) {
         socket.join('auth');
 
-        const client = this.mUsers.get(id);
-        client.socket = socket;
-        client.tLogout = 0;
+        const user = this.mUsers.get(id);
+        user.socket = socket;
+        user.tLogout = 0;
+
+        this.sendPacket(socket, P.SOCK.LoginRequest, { ret:0, id: id, nick: user.nick, auth: user.level, adminMemberVal: user.adminLevel, point: user.point });
 
         if( AutoQuizMan.isQuizRunning() ) {
             this.sendPacket(socket, P.SOCK.QuizData, AutoQuizMan.getCurQuizData());

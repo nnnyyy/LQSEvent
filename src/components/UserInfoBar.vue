@@ -37,8 +37,12 @@
         created: function() {
             const v = this;
             this.setInfo( 'noname', 0, 0 );
-            this.$bus.$on(P.SOCK.ComboInfo, function( combo ) {
-                v.comboCount = combo;
+            this.$bus.$on(P.SOCK.LoginRequest, function(info) {
+                v.setInfo(info.nick, info.auth, info.point);
+            });
+            this.$bus.$on(P.SOCK.ComboInfo, function( comboInfo ) {
+                v.comboCount = comboInfo.cnt;
+                v.point = comboInfo.point;
             });
         }
     }

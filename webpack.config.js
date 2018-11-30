@@ -8,7 +8,7 @@ const { VueLoaderPlugin } = require('vue-loader');
 const nodeExternals = require('webpack-node-externals');
 
 const env = process.env.NODE_ENV;
-const sourceMap = env === 'development';
+const sourceMap = env === 'development' ? 'inline-source-map' : '';
 
 const devServerConfig = {
     proxy: {
@@ -36,7 +36,7 @@ const babelLoader = {
 const config = {
     context: path.join(__dirname, "src"),
     entry: "./main.js",
-    devtool: 'inline-source-map',
+    devtool: sourceMap,
     externals: {
         'vue': 'Vue',
         'jquery': '$',

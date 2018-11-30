@@ -76,18 +76,19 @@ class AutoQuizManager {
                                 if( quizObj.collect == answerIdx ) {
                                     if( !isComboInit ) {
                                         user.quizCombo++;
+                                        const incPoint = aqm.getComboPoint(user.quizCombo);
+                                        user.point += incPoint;
+                                        user.saveFlag = true;
                                     }
                                     else {
                                         user.quizCombo = 1;
                                     }
-
-                                    aqm.serverMan.sendPacket( user.socket, P.SOCK.AlertMsg, {msg: `${user.quizCombo} 콤보!`});
                                 }
                                 else {
                                     user.quizCombo = 0;
                                 }
 
-                                aqm.serverMan.sendPacket( user.socket, P.SOCK.ComboInfo, {cnt: user.quizCombo});
+                                aqm.serverMan.sendPacket( user.socket, P.SOCK.ComboInfo, {cnt: user.quizCombo, point: user.point});
                             });
 
                             aqm.prevQuizObjStr = curQuizObjStr;
@@ -143,6 +144,17 @@ class AutoQuizManager {
         catch(e) {
             console.log(e);
         }
+    }
+
+    getComboPoint( combo ) {
+
+        if( combo == 5 ) return 10;
+
+        if( combo == 10 ) return 20;
+
+        if( combo == 20 ) return 30;
+
+        if( combo == 30 ) return 40;
     }
 }
 

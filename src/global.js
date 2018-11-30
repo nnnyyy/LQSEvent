@@ -7,7 +7,6 @@ import P from '../common/protocol';
 
 class Global {
     constructor() {
-        console.log(`Global value created`);
         this.socket = io();
         this.initSocketListener();
         this.vBus = new Vue();
@@ -30,15 +29,18 @@ class Global {
     }
 
     onNotLogined( packet ) {
+        if( packet.ret == -2 ) {
+            alert('중복 접속입니다!');
+            return;
+        }
         const info = {q: "로그인 후에 이용 해 주세요", a: [ "테스트1", "테스트2", "테스트3" ]};
-        this.vBus.$bus.$emit(P.SOCK.NotLogined, "");
+        this.vBus.$bus.$emit(P.SOCK.NotLogined, packet);
         //v.$bus.$emit("QuizInfo", JSON.stringify(info));
     }
 
     onLoginRequest( packet ) {
-        console.log("onLoginRequest", packet);
         if( packet.ret == 0 )
-            this.vBus.$bus.$emit(P.SOCK.LoginRequest, "");
+            this.vBus.$bus.$emit(P.SOCK.LoginRequest, packet);
         else {
             alert('아이디 또는 비밀번호가 맞지 않습니다');
         }
@@ -60,11 +62,23 @@ class Global {
     }
 
     onComboInfo( packet ) {
-        this.vBus.$bus.$emit(P.SOCK.ComboInfo, packet.cnt);
+        this.showComboAlert( packet.cnt );
+        this.vBus.$bus.$emit(P.SOCK.ComboInfo, packet);
     }
 
     sendPacket( protocol, packetData ) {
         this.socket.emit(protocol, packetData);
+    }
+
+    showComboAlert( cnt ) {
+        if( cnt < 2 ) return;
+
+        let msg = cnt + " 콤보!";
+        if( cnt >= 10 && cnt % 5 == 0 ) {
+            msg += ' 대단합니다!';
+        }
+
+        this.vBus.$bus.$emit(P.SetAlertMsg, msg);
     }
 }
 

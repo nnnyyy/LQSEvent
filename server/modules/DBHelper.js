@@ -51,6 +51,24 @@ class DBHelper {
             cb({ret: -99});
         }
     }
+
+    getActivePoint(id, cb) {
+        try {
+            this.sql.query("CALL getActivePoint( ?, @point ); select @point;", [id], function(err, rows) {
+                if(err) {
+                    console.log('error : ' + err);
+                    cb({ret: -99});
+                    return;
+                }
+
+                var point = rows[rows.length - 1][0]['@point'];
+                cb({ret: 0, point: point});
+            });
+        }catch(err) {
+            Log.logger.debug('DB Failed - getActivePoint');
+            cb({ret: -1});
+        }
+    }
 }
 
 
