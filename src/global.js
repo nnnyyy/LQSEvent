@@ -35,7 +35,6 @@ class Global {
         }
         const info = {q: "로그인 후에 이용 해 주세요", a: [ "테스트1", "테스트2", "테스트3" ]};
         this.vBus.$bus.$emit(P.SOCK.NotLogined, packet);
-        //v.$bus.$emit("QuizInfo", JSON.stringify(info));
     }
 
     onLoginRequest( packet ) {
@@ -63,6 +62,7 @@ class Global {
 
     onComboInfo( packet ) {
         this.showComboAlert( packet.cnt );
+        console.log(packet);
         this.vBus.$bus.$emit(P.SOCK.ComboInfo, packet);
     }
 

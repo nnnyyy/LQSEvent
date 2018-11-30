@@ -155,6 +155,8 @@ class AutoQuizManager {
         if( combo == 20 ) return 30;
 
         if( combo == 30 ) return 40;
+
+        return 0;
     }
 }
 
