@@ -2,7 +2,7 @@
     <div id="main">
         <top-bar></top-bar>
         <contents></contents>
-        <div v-if="isMobile">
+        <div v-if="!isMobile">
             <div style="width:980px;margin: 0 auto; position: absolute; bottom: 0; left: calc( 50% - 490px );">
                 <div style="width: 320px; float: left">
                     <ins class="kakao_ad_area" style="display:none;width:100%"
@@ -51,8 +51,14 @@
     import Top from './components/Top.vue';
     import Contents from './components/Contents.vue';
     import AlertWnd from './components/AlertWnd.vue';
+    import G from './global';
 
     export default {
+        data: function() {
+            return {
+                isMobile: G.isMobile()
+            }
+        },
         components: {
             'top-bar': Top,
             'contents': Contents,
