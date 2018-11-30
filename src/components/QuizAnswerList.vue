@@ -3,7 +3,7 @@
         <ul>
             <template v-for="item in answers">
                 <li :class="{qal_li_mobile: isMobile}">
-                    <div class="answer" :class="{click: item.isClicked, answermobile: isMobile }" :style="item.style" @click="onBtnSelectAnswer(item.number-1)">
+                    <div :class="{click: item.isClicked, answer: !isMobile, answermobile: isMobile }" :style="item.style" @click="onBtnSelectAnswer(item.number-1)">
                         {{item.number}}. {{item.answer}}
                     </div>
                 </li>
@@ -105,16 +105,15 @@
         font-size: 14px;
         height: 50px;
         line-height: 50px;
+        margin: 0 auto;
+        cursor: pointer;
+        transition: 0.5s;
     }
 
     .answer:hover {
         font-weight: 900;
         font-size: 30px;
         color: #3e58a7;
-    }
-
-    .answermobile:hover {
-        font-size: 16px;
     }
 
     .click {
