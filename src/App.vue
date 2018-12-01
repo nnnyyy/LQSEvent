@@ -24,8 +24,8 @@
                 </div>
             </div>
         </div>
-        <div v-else>
-            <div style="width:320px;margin: 0 auto; position: absolute; bottom: 0; left: calc( 50% - 160px );">
+        <div v-else style="margin: 20px 0 0 0">
+            <div style="    width:320px;margin: 0 auto; ">
                 <div style="width: 320px; float: left">
                     <ins class="kakao_ad_area" style="display:none;width:100%"
                          data-ad-unit    = "DAN-t87e91n4i053"
@@ -33,10 +33,18 @@
                          data-ad-height  = "50"></ins>
                 </div>
             </div>
-            <div style="width:320px;margin: 0 auto; position: absolute; bottom: 52px; left: calc( 50% - 160px );">
+            <div style="width:320px;margin: 0 auto; ">
                 <div style="width: 320px; float: left">
                     <ins class="kakao_ad_area" style="display:none;width:100%"
                          data-ad-unit    = "DAN-uvjqvmlqkb3k"
+                         data-ad-width   = "320"
+                         data-ad-height  = "50"></ins>
+                </div>
+            </div>
+            <div style="width:320px;margin: 0 auto; ">
+                <div style="width: 320px; float: left">
+                    <ins class="kakao_ad_area" style="display:none;width:100%"
+                         data-ad-unit    = "DAN-rh5ikhi3t46a"
                          data-ad-width   = "320"
                          data-ad-height  = "50"></ins>
                 </div>
