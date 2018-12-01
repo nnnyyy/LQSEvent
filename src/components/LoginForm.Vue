@@ -7,7 +7,7 @@
             </tr>
             <tr>
                 <td>비밀번호</td>
-                <td><input type="password" v-model="ipw" /></td>
+                <td><input type="password" v-model="ipw" @keyup.enter="onBtnLogin" /></td>
             </tr>
             <tr>
                 <td colspan="2">
