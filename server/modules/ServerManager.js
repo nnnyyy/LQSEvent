@@ -265,6 +265,7 @@ class ServerManager {
             newUser.adminLevel = ret.result.adminMemberVal;
             newUser.point = ret.result.point;
             sm.mUsers.set(ret.id, newUser);
+            sm.setPostListener(socket);
             resolve(ret);
         });
     }
@@ -272,14 +273,20 @@ class ServerManager {
     //  유저가 접속합니다.
     connectUser(socket) {
         const userdata = socket.handshake.session.userdata;
+
         this.setPreListener(socket);
+
         if( !userdata ) {
+
             this.sendPacket(socket, P.SOCK.NotLogined, { ret: 0});
             return;
         }
 
         const user = this.mUsers.get( userdata.id );
+
         if( user && user.socket.connected ) {
+
+            //   중복 접속
             this.sendPacket(socket, P.SOCK.NotLogined, {ret: -2});
             return;
         }
@@ -299,6 +306,7 @@ class ServerManager {
     checkReconnect(id) {
         const sm = this;
         const client = sm.mUsers.get(id);
+
         if( !client ) {
             return false;
         }
@@ -314,6 +322,8 @@ class ServerManager {
         const user = this.mUsers.get(id);
         user.socket = socket;
         user.tLogout = 0;
+
+
 
         this.sendPacket(socket, P.SOCK.LoginRequest, { ret:0, id: id, nick: user.nick, auth: user.level, adminMemberVal: user.adminLevel, point: user.point });
         this.sendPacket(socket, P.SOCK.ComboInfo, {cnt: user.quizCombo, point: user.point});
