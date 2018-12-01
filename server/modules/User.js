@@ -8,6 +8,7 @@ class User {
         this.socket = socket;
         this.quizCombo = 0;
         this.saveFlag = false;
+        this.maxCombo = 0;
     }
 }
 

@@ -197,9 +197,42 @@ class ServerManager {
     }
 
     logout( socket, id ) {
-        this.mUsers.delete( id );
-        delete socket.handshake.session.userdata;
-        socket.handshake.session.save();
+        const sm = this;
+        const user = this.mUsers.get(id);
+        if( !user ) {
+            return;
+        }
+
+        new Promise(function(resolve, reject) {
+            if( user.saveFlag ) {
+                DBHelper.savePoint( id, user.point, function(result) {
+                    resolve();
+                });
+            }
+            else {
+                resolve();
+            }
+        })
+        .then(function() {
+            return new Promise(function(resolve, reject) {
+                if( user.saveFlag ) {
+                    DBHelper.saveMaxCombo( id, user.maxCombo, function(result) {
+
+                    });
+                }
+                else {
+                    resolve();
+                }
+            })
+        })
+        .then(function() {
+            sm.mUsers.delete( id );
+            delete socket.handshake.session.userdata;
+            socket.handshake.session.save();
+        })
+        .catch(function(err) {
+            console.log(err);
+        })
     }
 
     loadPoint( ret ) {

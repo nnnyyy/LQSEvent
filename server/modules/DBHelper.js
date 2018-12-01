@@ -65,7 +65,33 @@ class DBHelper {
                 cb({ret: 0, point: point});
             });
         }catch(err) {
-            Log.logger.debug('DB Failed - getActivePoint');
+            //Log.logger.debug('DB Failed - getActivePoint');
+            cb({ret: -1});
+        }
+    }
+
+    savePoint(id, point, cb) {
+        try {
+            this.sql.query("CALL updateActivePoint( ?, ? );", [id, point], function(err, rows) {
+                if(err) {
+                    console.log('error : ' + err);
+                    cb({ret: -99});
+                    return;
+                }
+
+                cb({ret: 0});
+            });
+        }catch(err) {
+            //Log.logger.debug('DB Failed - updateActivePoint');
+            cb({ret: -1});
+        }
+    }
+
+    saveMaxCombo(id, maxCombo, cb) {
+        try {
+            cb({ret: 0});
+        }catch(e) {
+            console.log(e);
             cb({ret: -1});
         }
     }

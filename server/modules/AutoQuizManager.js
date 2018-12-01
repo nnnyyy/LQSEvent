@@ -85,6 +85,10 @@ class AutoQuizManager {
                                     }
                                 }
                                 else {
+                                    if( user.quizCombo > 0 && user.quizCombo > user.maxCombo ) {
+                                        user.maxCombo = user.quizCombo;
+                                        user.saveFlag = true;
+                                    }
                                     user.quizCombo = 0;
                                 }
 
@@ -135,7 +139,6 @@ class AutoQuizManager {
     onQuizAnswer(id, answerIdx) {
         try {
             if( this.mUserSelect.has(id) ) {
-                console.log('already selected - ', id, answerIdx);
                 return;
             }
 

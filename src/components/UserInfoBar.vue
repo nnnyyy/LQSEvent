@@ -11,7 +11,7 @@
         <div :class="{mobileitem: isMobile}" class="id item" v-show="logined"> | </div>
         <div :class="{mobileitem: isMobile}" class="id item" v-show="logined"> {{comboCount}} 콤보</div>
         <div :class="{mobileitem: isMobile}" class="id item" v-show="logined"> | </div>
-        <div :class="{mobileitem: isMobile}" class="id item" v-show="logined"><button @click="onBtnLogout" style="width: auto;">logout</button></div>
+        <div :class="{mobileitem: isMobile}" class="id item" v-show="logined"><button @click="onBtnLogout" style="width: auto; padding: 4px 6px;">logout</button></div>
     </div>
 </template>
 
@@ -48,7 +48,6 @@
                 this.logined = false;
             },
             onBtnLogout: function(e) {
-                e.preventDefault();
                 G.sendPacket(P.SOCK.Logout, {});
             }
         },
@@ -81,6 +80,7 @@
         background-color: #1e2a5d;
         border-bottom: 6px solid #334696;
         overflow-x: hidden;
+        overflow-y: hidden;
     }
 
     .item {
