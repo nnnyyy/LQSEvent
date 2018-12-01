@@ -2,9 +2,10 @@
     <div class="quizanswerlist" :class="{quizanswerlist_mobile: isMobile}" v-show="visible">
         <ul>
             <template v-for="item in answers">
-                <li :class="{qal_li_mobile: isMobile}">
+                <li style="position: relative" :class="{qal_li_mobile: isMobile}">
                     <div :class="{click: item.isClicked, answer: !isMobile, answermobile: isMobile }" :style="item.style" @click="onBtnSelectAnswer(item.number-1)">
                         {{item.number}}. {{item.answer}}
+                        <div :class="{answer_inner: !isMobile, answermobile_inner: isMobile}" style="" v-text="item.selectedCnt">0</div>
                     </div>
                 </li>
             </template>
@@ -26,7 +27,7 @@
             };
         },
         created: function() {
-            const item = { number: 1, answer: "보기", style: {}, isClicked: false }
+            const item = { number: 1, answer: "보기", style: {}, isClicked: false, selectedCnt: 0 }
             this.answers.push(item);
             this.answers.push(item);
             this.answers.push(item);
@@ -37,9 +38,9 @@
             this.$bus.$on(P.SOCK.QuizData, function( data ) {
                 const packet = JSON.parse(data);
                 v.answers = [];
-                v.answers.push({isClicked: false, number: 1, answer: packet.answer[0], style: {}});
-                v.answers.push({isClicked: false, number: 2, answer: packet.answer[1], style: {}});
-                v.answers.push({isClicked: false, number: 3, answer: packet.answer[2], style: {}});
+                v.answers.push({isClicked: false, number: 1, answer: packet.answer[0], style: {}, selectedCnt: 0});
+                v.answers.push({isClicked: false, number: 2, answer: packet.answer[1], style: {}, selectedCnt: 0});
+                v.answers.push({isClicked: false, number: 3, answer: packet.answer[2], style: {}, selectedCnt: 0});
                 v.selectable = true;
             });
 
@@ -49,6 +50,12 @@
                     "backgroundColor": "#3e58a7",
                     "color": "white"
                 };
+            });
+
+            this.$bus.$on(P.SOCK.QuizAnswerCnt, function( packet ) {
+                v.answers[0].selectedCnt = packet.cnts[0];
+                v.answers[1].selectedCnt = packet.cnts[1];
+                v.answers[2].selectedCnt = packet.cnts[2];
             });
         },
         methods: {
@@ -98,6 +105,22 @@
         font-size: 26px;
         cursor: pointer;
         transition: 0.5s;
+        z-index: 2;
+    }
+
+    .answer_inner {
+        width: 700px;
+        height: 70px;
+        line-height: 70px;
+        font-size: 26px;
+        cursor: pointer;
+        position: absolute;
+        left: calc( 50% - 350px);
+        top:0;
+        background-color: transparent;
+        z-index: 0;
+        opacity: 0.4;
+        text-align: right;
     }
 
     .answermobile {
@@ -108,6 +131,23 @@
         margin: 0 auto;
         cursor: pointer;
         transition: 0.5s;
+    }
+
+    .answermobile_inner {
+        width: 100%;
+        font-size: 14px;
+        height: 50px;
+        line-height: 50px;
+        margin: 0 auto;
+        cursor: pointer;
+        transition: 0.5s;
+        position: absolute;
+        left: 0;
+        top:0;
+        background-color: transparent;
+        z-index: 0;
+        opacity: 0.4;
+        text-align: right;
     }
 
     .answer:hover {

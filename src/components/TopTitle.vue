@@ -42,7 +42,7 @@
         },
         methods: {
             onNotLogined: function() {
-                this.titleText = "로그인 후에 이용 해 주세요"
+                this.titleText = "라이브 퀴즈 공유기 기출문제입니다<br>로그인 후에 이용 해 주세요"
             },
             onLoginRequest: function() {
                 this.titleText = "다음 문제를 기다리고 있습니다"

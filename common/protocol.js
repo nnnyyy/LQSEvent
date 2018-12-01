@@ -14,7 +14,8 @@ const VueBus = {
         QuizAnswer: "QuizAnswer",
         AlertMsg: "AlertMsg",
         ComboInfo: "ComboInfo",
-        Logout: "Logout"
+        Logout: "Logout",
+        QuizAnswerCnt: "QuizAnswerCnt"
     }
 };
 

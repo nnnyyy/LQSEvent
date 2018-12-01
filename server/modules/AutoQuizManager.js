@@ -15,7 +15,9 @@ class AutoQuizManager {
         this.serverMan = sm;
         this.isRunning = false;
         this.mUserSelect = new Map();
+        this.aSelect = [0,0,0];
         this.prevQuizObjStr = "";
+        this.tUpdate500ms = 0;
     }
 
     update(tCur) {
@@ -36,6 +38,7 @@ class AutoQuizManager {
                     quizObj.tRemain = 10000;
                     quizObj.state = 0;
                     aqm.mUserSelect.clear();
+                    aqm.aSelect = [0,0,0];
                     aqm.serverMan.broadcastPacket( P.SOCK.QuizData, quizObj );
                 })
                 .catch(function(err) {
@@ -112,6 +115,14 @@ class AutoQuizManager {
 
                 }
             }
+
+            if( tCur - this.tUpdate500ms >= 500 ) {
+                this.tUpdate500ms = tCur;
+                this.serverMan.mUsers.forEach(function(user, id ) {
+                    aqm.serverMan.sendPacket( user.socket, P.SOCK.QuizAnswerCnt, {cnts: aqm.aSelect});
+                });
+
+            }
         }catch(e) {
             console.log(e);
         }
@@ -143,6 +154,7 @@ class AutoQuizManager {
             }
 
             this.mUserSelect.set(id, answerIdx);
+            this.aSelect[answerIdx]++;
         }
         catch(e) {
             console.log(e);

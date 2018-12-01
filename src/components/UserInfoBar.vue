@@ -1,5 +1,6 @@
 <template>
     <div class="user-info-bar" :class="{userinfomobile: isMobile}">
+        <div :class="{mobileitem: isMobile}" class="id item" v-show="!isMobile">라이브 퀴즈 공유기 기출문제</div>
         <div class="icon item" v-show="logined">
             <img class="img-icon" :src="imageURL">
         </div>

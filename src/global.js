@@ -20,6 +20,7 @@ class Global {
         this.socket.on(P.SOCK.QuizDataResult, function(packet) { g.onQuizDataResult(packet); });
         this.socket.on(P.SOCK.AlertMsg, function(packet) { g.onAlertMsg(packet); });
         this.socket.on(P.SOCK.ComboInfo, function(packet) { g.onComboInfo(packet); });
+        this.socket.on(P.SOCK.QuizAnswerCnt, function(packet) { g.onQuizAnswerCnt(packet); });
     }
 
     isMobile() {
@@ -71,8 +72,11 @@ class Global {
 
     onComboInfo( packet ) {
         this.showComboAlert( packet.cnt );
-        console.log(packet);
         this.vBus.$bus.$emit(P.SOCK.ComboInfo, packet);
+    }
+
+    onQuizAnswerCnt( packet ) {
+        this.vBus.$bus.$emit(P.SOCK.QuizAnswerCnt, packet);
     }
 
     sendPacket( protocol, packetData ) {
