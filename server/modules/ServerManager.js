@@ -94,14 +94,14 @@ class ServerManager {
 
     setPreListener( socket ) {
         const sm = this;
-        socket.on(P.SOCK.LoginRequest, function(packet) { sm.onLoginRequest(socket, packet); })
+        socket.on(P.SOCK.LoginRequest, function(packet) { sm.onLoginRequest(socket, packet); });
+        socket.on(P.SOCK.Disconnect, function() { sm.onDisconnect(socket); });
+        socket.on(P.SOCK.QuizAnswer, function(packet) { sm.onQuizAnswer(socket, packet); });
+        socket.on(P.SOCK.Logout, function(packet) { sm.onLogout(socket, packet); });
     }
 
     setPostListener( socket ) {
         const sm = this;
-        socket.on(P.SOCK.Disconnect, function() { sm.onDisconnect(socket); });
-        socket.on(P.SOCK.QuizAnswer, function(packet) { sm.onQuizAnswer(socket, packet); });
-        socket.on(P.SOCK.Logout, function(packet) { sm.onLogout(socket, packet); });
     }
 
     onLoginRequest( socket, packet ) {
@@ -265,7 +265,6 @@ class ServerManager {
             newUser.adminLevel = ret.result.adminMemberVal;
             newUser.point = ret.result.point;
             sm.mUsers.set(ret.id, newUser);
-            sm.setPostListener(socket);
             resolve(ret);
         });
     }
@@ -285,13 +284,10 @@ class ServerManager {
         const user = this.mUsers.get( userdata.id );
 
         if( user && user.socket.connected ) {
-
             //   중복 접속
             this.sendPacket(socket, P.SOCK.NotLogined, {ret: -2});
             return;
         }
-
-        this.setPostListener(socket);
 
         if( this.checkReconnect(userdata.id) ) {
             this.setReconnect(socket, userdata.id);
