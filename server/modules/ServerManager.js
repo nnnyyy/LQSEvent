@@ -284,7 +284,7 @@ class ServerManager {
 
         const user = this.mUsers.get( userdata.id );
 
-        if( user && user.socket.connected ) {
+        if( user && user.socket.id != socket.id && user.socket.connected ) {
             //   중복 접속
             this.sendPacket(socket, P.SOCK.NotLogined, {ret: -2});
             return;
