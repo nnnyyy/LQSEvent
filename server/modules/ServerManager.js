@@ -62,9 +62,17 @@ class ServerManager {
             sm.aDisconnect = [];
 
             this.mUsers.forEach(function(item, id) {
+                const user = item;
                 if( !item.socket.connected ) {
                     if( tCur - item.tLogout >= 10 * 1000 ) {
                         sm.aDisconnect.push(id);
+                    }
+                }
+                else {
+                    if( user.saveFlag & User.getSaveFlag().SFLAG_MAX_COMBO) {
+                        user.saveFlag &= ~User.getSaveFlag().SFLAG_MAX_COMBO;
+                        DBHelper.saveMaxCombo( id, user.maxCombo, function(result) {
+                        });
                     }
                 }
             });
@@ -80,7 +88,7 @@ class ServerManager {
             AutoQuizMan.update( tCur );
 
         }catch(e) {
-
+            console.log(e);
         }
     }
 
@@ -90,6 +98,10 @@ class ServerManager {
 
     broadcastPacket( protocol, data ) {
         this.io.sockets.in('auth').emit( protocol, data );
+    }
+
+    broadcastAllPacket( protocol, data ) {
+        this.io.sockets.emit( protocol, data );
     }
 
     setPreListener( socket ) {
@@ -112,8 +124,12 @@ class ServerManager {
             }
 
             const sm = this;
+
+
+
             this.login(socket, packet.id, packet.pw, ip)
             .then(this.loadPoint)
+            .then(this.loadQuizInfo)
             .then(this.createUser)
             .then(function(ret) {
                 sm.sendPacket(socket, P.SOCK.LoginRequest, ret.result);
@@ -217,7 +233,7 @@ class ServerManager {
             return new Promise(function(resolve, reject) {
                 if( user.saveFlag & User.getSaveFlag().SFLAG_MAX_COMBO) {
                     DBHelper.saveMaxCombo( id, user.maxCombo, function(result) {
-
+                        resolve();
                     });
                 }
                 else {
@@ -250,6 +266,21 @@ class ServerManager {
         });
     }
 
+    loadQuizInfo( ret ) {
+        ret.result.maxCombo = 0;
+        return new Promise(function(resolve, reject) {
+            DBHelper.getQuizInfo(ret.id, function(result) {
+                if( result.ret != 0 ) {
+                    reject();
+                    return;
+                }
+
+                ret.result.maxCombo = result.maxCombo;
+                resolve(ret);
+            });
+        });
+    }
+
     createUser( ret ) {
         const sm = ret.sm;
         const socket = ret.sock;
@@ -265,6 +296,7 @@ class ServerManager {
             newUser.level = ret.result.auth;
             newUser.adminLevel = ret.result.adminMemberVal;
             newUser.point = ret.result.point;
+            newUser.maxCombo = ret.result.maxCombo;
             sm.mUsers.set(ret.id, newUser);
             resolve(ret);
         });
@@ -275,6 +307,8 @@ class ServerManager {
         const userdata = socket.handshake.session.userdata;
 
         this.setPreListener(socket);
+
+        this.broadcastAllPacket( P.SOCK.QuizRecordRank, {list: AutoQuizMan.quizRecordRankList});
 
         if( !userdata ) {
 

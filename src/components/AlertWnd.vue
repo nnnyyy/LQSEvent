@@ -31,7 +31,7 @@
                 this.onOpen();
                 setTimeout(function(){
                     v.onClose();
-                }, 2000);
+                }, 2700);
             }
         },
         created: function() {

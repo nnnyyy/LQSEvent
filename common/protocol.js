@@ -16,7 +16,9 @@ const VueBus = {
         ComboInfo: "ComboInfo",
         Logout: "Logout",
         QuizAnswerCnt: "QuizAnswerCnt",
-        CurrentComboRank: "CurrentComboRank"
+        CurrentComboRank: "CurrentComboRank",
+        AnswerFirstSelectUser: "AnswerFirstSelectUser",
+        QuizRecordRank: "QuizRecordRank"
     }
 };
 

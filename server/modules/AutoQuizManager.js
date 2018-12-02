@@ -19,8 +19,10 @@ class AutoQuizManager {
         this.aSelect = [0,0,0];
         this.prevQuizObjStr = "";
         this.tUpdate500ms = 0;
+        this.tUpdate30s = 0;
         this.aTop10 = [];
         this.tStart = 0;
+        this.quizRecordRankList = [];
     }
 
     update(tCur) {
@@ -84,14 +86,14 @@ class AutoQuizManager {
 
 
                                     if( quizObj.collect == answerIdx ) {
-                                        //user.incPoint += 3;
-                                        //user.saveFlag |= User.getSaveFlag().SFLAG_INC_POINT;
+                                        user.incPoint += 3;
+                                        user.saveFlag |= User.getSaveFlag().SFLAG_INC_POINT;
 
                                         if( !isComboInit ) {
                                             user.quizCombo++;
                                             const incPoint = aqm.getComboPoint(user.quizCombo);
-                                            //user.incPoint += incPoint;
-                                            //user.saveFlag |= User.getSaveFlag().SFLAG_INC_POINT;
+                                            user.incPoint += incPoint;
+                                            user.saveFlag |= User.getSaveFlag().SFLAG_INC_POINT;
                                         }
                                         else {
                                             user.quizCombo = 1;
@@ -137,8 +139,9 @@ class AutoQuizManager {
                 this.serverMan.mUsers.forEach(function(user, id ) {
                     if( user.quizCombo )
                         aUserSorted.push({nick: user.nick, quizCombo: user.quizCombo, level: user.level});
-                    aqm.serverMan.sendPacket( user.socket, P.SOCK.QuizAnswerCnt, {cnts: aqm.aSelect});
                 });
+
+                this.serverMan.broadcastPacket( P.SOCK.QuizAnswerCnt, {cnts: aqm.aSelect});
 
                 aUserSorted.sort(function(u1, u2) {
                     return u2.quizCombo - u1.quizCombo;
@@ -147,6 +150,14 @@ class AutoQuizManager {
                 this.aTop10 = aUserSorted.slice(0, 10);
 
                 aqm.serverMan.broadcastPacket( P.SOCK.CurrentComboRank, { ranker: this.aTop10 } );
+            }
+
+            if( tCur - this.tUpdate30s >= 1000 * 30 ) {
+                this.tUpdate30s = tCur;
+                DBHelper.getQuizRecordRank(function(result) {
+                    aqm.quizRecordRankList = result.list;
+                    aqm.serverMan.broadcastAllPacket( P.SOCK.QuizRecordRank, {list: result.list});
+                });
             }
         }catch(e) {
             console.log(e);
@@ -180,6 +191,12 @@ class AutoQuizManager {
 
             this.mUserSelect.set(id, answerIdx);
             this.aSelect[answerIdx]++;
+
+            if( this.mUserSelect.size == 1 ) {
+                //  최초 선택자
+                const user = this.serverMan.getUser( id );
+                this.serverMan.broadcastPacket(P.SOCK.AnswerFirstSelectUser, {nick: user.nick, level: user.level });
+            }
         }
         catch(e) {
             console.log(e);

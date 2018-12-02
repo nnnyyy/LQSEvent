@@ -70,6 +70,42 @@ class DBHelper {
         }
     }
 
+    getQuizInfo(id, cb) {
+        try {
+            this.sql.query("CALL getQuizRecord( ?, @maxCombo ); select @maxCombo;", [id], function(err, rows) {
+                if(err) {
+                    console.log('error : ' + err);
+                    cb({ret: -99});
+                    return;
+                }
+
+                var maxCombo = rows[rows.length - 1][0]['@maxCombo'];
+                cb({ret: 0, maxCombo: maxCombo});
+            });
+        }catch(err) {
+            //Log.logger.debug('DB Failed - getActivePoint');
+            cb({ret: -1});
+        }
+    }
+
+    getQuizRecordRank(cb) {
+        try {
+            this.sql.query("CALL getQuizRecordRank()", function(err, rows) {
+                if(err) {
+                    console.log('error : ' + err);
+                    cb({ret: -99});
+                    return;
+                }
+
+                const aDataList = rows[0];
+                cb({ret: 0, list: aDataList});
+            });
+        }catch(err) {
+            //Log.logger.debug('DB Failed - getActivePoint');
+            cb({ret: -1});
+        }
+    }
+
     incPoint(id, incPoint, cb) {
         try {
             this.sql.query("CALL incActivePoint( ?, ? );", [id, incPoint], function(err, rows) {
@@ -106,9 +142,17 @@ class DBHelper {
 
     saveMaxCombo(id, maxCombo, cb) {
         try {
-            cb({ret: 0});
-        }catch(e) {
-            console.log(e);
+            this.sql.query("CALL updateQuizRecord( ?, ? );", [id, maxCombo], function(err, rows) {
+                if(err) {
+                    console.log('error : ' + err);
+                    cb({ret: -99});
+                    return;
+                }
+
+                cb({ret: 0});
+            });
+        }catch(err) {
+            //Log.logger.debug('DB Failed - updateActivePoint');
             cb({ret: -1});
         }
     }

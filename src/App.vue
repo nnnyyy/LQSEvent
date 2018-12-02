@@ -53,6 +53,7 @@
 
         <alert-wnd></alert-wnd>
         <cur-combo-rank></cur-combo-rank>
+        <quiz-record-rank></quiz-record-rank>
     </div>
 </template>
 
@@ -60,7 +61,8 @@
     import Top from './components/Top.vue';
     import Contents from './components/Contents.vue';
     import AlertWnd from './components/AlertWnd.vue';
-    import CurrentComboRank from './components/CurrentComboRank.vue'
+    import CurrentComboRank from './components/CurrentComboRank.vue';
+    import QuizRecordRank from './components/QuizRecordRank.vue';
     import G from './global';
 
     export default {
@@ -73,7 +75,8 @@
             'top-bar': Top,
             'contents': Contents,
             'alert-wnd': AlertWnd,
-            'cur-combo-rank': G.isMobile() ? '' : CurrentComboRank
+            'cur-combo-rank': G.isMobile() ? '' : CurrentComboRank,
+            'quiz-record-rank': G.isMobile() ? '' : QuizRecordRank
         }
     }
 </script>

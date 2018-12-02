@@ -22,6 +22,8 @@ class Global {
         this.socket.on(P.SOCK.ComboInfo, function(packet) { g.onComboInfo(packet); });
         this.socket.on(P.SOCK.QuizAnswerCnt, function(packet) { g.onQuizAnswerCnt(packet); });
         this.socket.on(P.SOCK.CurrentComboRank, function(packet) { g.onCurrentComboRank(packet); });
+        this.socket.on(P.SOCK.AnswerFirstSelectUser, function(packet) { g.onAnswerFirstSelectUser(packet); });
+        this.socket.on(P.SOCK.QuizRecordRank, function(packet) { g.onQuizRecordRank(packet); });
     }
 
     isMobile() {
@@ -82,6 +84,15 @@ class Global {
 
     onCurrentComboRank( packet ) {
         this.vBus.$bus.$emit(P.SOCK.CurrentComboRank, packet);
+    }
+
+    onAnswerFirstSelectUser( packet ) {
+        const msg = packet.nick + '님이 제일 먼저 선택했습니다';
+        this.vBus.$bus.$emit(P.SetAlertMsg, msg);
+    }
+
+    onQuizRecordRank( packet ) {
+        this.vBus.$bus.$emit(P.SOCK.QuizRecordRank, packet);
     }
 
     sendPacket( protocol, packetData ) {
