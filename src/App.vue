@@ -52,6 +52,7 @@
         </div>
 
         <alert-wnd></alert-wnd>
+        <cur-combo-rank></cur-combo-rank>
     </div>
 </template>
 
@@ -59,6 +60,7 @@
     import Top from './components/Top.vue';
     import Contents from './components/Contents.vue';
     import AlertWnd from './components/AlertWnd.vue';
+    import CurrentComboRank from './components/CurrentComboRank.vue'
     import G from './global';
 
     export default {
@@ -70,7 +72,8 @@
         components: {
             'top-bar': Top,
             'contents': Contents,
-            'alert-wnd': AlertWnd
+            'alert-wnd': AlertWnd,
+            'cur-combo-rank': G.isMobile() ? '' : CurrentComboRank
         }
     }
 </script>

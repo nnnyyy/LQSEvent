@@ -204,8 +204,8 @@ class ServerManager {
         }
 
         new Promise(function(resolve, reject) {
-            if( user.saveFlag ) {
-                DBHelper.savePoint( id, user.point, function(result) {
+            if( user.saveFlag & User.getSaveFlag().SFLAG_INC_POINT) {
+                DBHelper.incPoint( id, user.incPoint, function(result) {
                     resolve();
                 });
             }
@@ -215,7 +215,7 @@ class ServerManager {
         })
         .then(function() {
             return new Promise(function(resolve, reject) {
-                if( user.saveFlag ) {
+                if( user.saveFlag & User.getSaveFlag().SFLAG_MAX_COMBO) {
                     DBHelper.saveMaxCombo( id, user.maxCombo, function(result) {
 
                     });
@@ -226,6 +226,7 @@ class ServerManager {
             })
         })
         .then(function() {
+            user.saveFlag = 0;
             sm.mUsers.delete( id );
             delete socket.handshake.session.userdata;
             socket.handshake.session.save();

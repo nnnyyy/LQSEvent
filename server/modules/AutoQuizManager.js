@@ -6,6 +6,7 @@
 const P = require('../../common/protocol');
 const DBHelper = require('./DBHelper');
 const Promise = require('promise');
+const User = require('./User');
 
 class AutoQuizManager {
     constructor() {
@@ -18,6 +19,7 @@ class AutoQuizManager {
         this.aSelect = [0,0,0];
         this.prevQuizObjStr = "";
         this.tUpdate500ms = 0;
+        this.aTop5 = [];
     }
 
     update(tCur) {
@@ -77,11 +79,13 @@ class AutoQuizManager {
                                 if( !user ) return;
 
                                 if( quizObj.collect == answerIdx ) {
+                                    user.incPoint += 3;
+
                                     if( !isComboInit ) {
                                         user.quizCombo++;
                                         const incPoint = aqm.getComboPoint(user.quizCombo);
-                                        user.point += incPoint;
-                                        user.saveFlag = true;
+                                        user.incPoint += incPoint;
+                                        user.saveFlag |= User.getSaveFlag().SFLAG_INC_POINT;
                                     }
                                     else {
                                         user.quizCombo = 1;
@@ -90,12 +94,12 @@ class AutoQuizManager {
                                 else {
                                     if( user.quizCombo > 0 && user.quizCombo > user.maxCombo ) {
                                         user.maxCombo = user.quizCombo;
-                                        user.saveFlag = true;
+                                        user.saveFlag |= User.getSaveFlag().SFLAG_MAX_COMBO;
                                     }
                                     user.quizCombo = 0;
                                 }
 
-                                aqm.serverMan.sendPacket( user.socket, P.SOCK.ComboInfo, {cnt: user.quizCombo, point: user.point});
+                                aqm.serverMan.sendPacket( user.socket, P.SOCK.ComboInfo, {cnt: user.quizCombo, point: user.point + user.incPoint});
                             });
 
                             aqm.prevQuizObjStr = curQuizObjStr;
@@ -118,10 +122,20 @@ class AutoQuizManager {
 
             if( tCur - this.tUpdate500ms >= 500 ) {
                 this.tUpdate500ms = tCur;
+                let aUserSorted = [];
                 this.serverMan.mUsers.forEach(function(user, id ) {
+                    if( user.quizCombo )
+                        aUserSorted.push({nick: user.nick, quizCombo: user.quizCombo, level: user.level});
                     aqm.serverMan.sendPacket( user.socket, P.SOCK.QuizAnswerCnt, {cnts: aqm.aSelect});
                 });
 
+                aUserSorted.sort(function(u1, u2) {
+                    return u2.quizCombo - u1.quizCombo;
+                });
+
+                this.aTop5 = aUserSorted.slice(0, 5);
+
+                aqm.serverMan.broadcastPacket( P.SOCK.CurrentComboRank, { ranker: this.aTop5 } );
             }
         }catch(e) {
             console.log(e);
