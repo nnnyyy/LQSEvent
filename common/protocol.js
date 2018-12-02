@@ -5,6 +5,7 @@ const VueBus = {
     CloseInventory: "CloseInentory",
     StartTimer: "StartTimer",
     SetAlertMsg: "SetAlertMsg",
+    OpenGachaBox: "OpenGachaBox",
     SOCK: {
         NotLogined: "NotLogined",
         LoginRequest: "LoginRequest",

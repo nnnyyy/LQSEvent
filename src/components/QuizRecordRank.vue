@@ -58,7 +58,7 @@
 
     #combo-rank {
         position: absolute;
-        right: 0;
+        right: 2px;
         top: 230px;
         width: 200px;
         height: 240px;

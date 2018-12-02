@@ -102,6 +102,10 @@ class Global {
     showComboAlert( cnt ) {
         if( cnt < 2 ) return;
 
+        if( cnt == 5 ) {
+            this.vBus.$bus.$emit(P.OpenGachaBox, {name: '놀라셨죠? 아직 테스트 중이라 뭐 없어요~ㅋㅋ'});
+        }
+
         let msg = cnt + " 콤보!";
         if( cnt >= 10 && cnt % 5 == 0 ) {
             msg += ' 대단합니다!';

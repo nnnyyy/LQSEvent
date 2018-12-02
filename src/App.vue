@@ -54,6 +54,7 @@
         <alert-wnd></alert-wnd>
         <cur-combo-rank></cur-combo-rank>
         <quiz-record-rank></quiz-record-rank>
+        <box-effect></box-effect>
     </div>
 </template>
 
@@ -63,6 +64,7 @@
     import AlertWnd from './components/AlertWnd.vue';
     import CurrentComboRank from './components/CurrentComboRank.vue';
     import QuizRecordRank from './components/QuizRecordRank.vue';
+    import BoxEffect from './components/BoxOpenEffect.vue';
     import G from './global';
 
     export default {
@@ -76,7 +78,8 @@
             'contents': Contents,
             'alert-wnd': AlertWnd,
             'cur-combo-rank': G.isMobile() ? '' : CurrentComboRank,
-            'quiz-record-rank': G.isMobile() ? '' : QuizRecordRank
+            'quiz-record-rank': G.isMobile() ? '' : QuizRecordRank,
+            'box-effect': BoxEffect
         }
     }
 </script>
