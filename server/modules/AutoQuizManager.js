@@ -73,36 +73,43 @@ class AutoQuizManager {
 
                             //  정답자 콤보 처리
                             this.mUserSelect.forEach(function(answerIdx, id ) {
-                                let user = aqm.serverMan.getUser( id );
-                                //  문제 끊길 시 초기화  처리
-                                //const isComboInit = aqm.prevQuizObjStr !== user.lastQuizObjectStr;
-                                const isComboInit = false;
+                                try {
+                                    let user = aqm.serverMan.getUser( id );
+                                    if( !user ) return;
+                                    //  문제 끊길 시 초기화  처리
+                                    //const isComboInit = aqm.prevQuizObjStr !== user.lastQuizObjectStr;
+                                    const isComboInit = false;
 
-                                user.lastQuizObjectStr = curQuizObjStr;
-                                if( !user ) return;
+                                    user.lastQuizObjectStr = curQuizObjStr;
 
-                                if( quizObj.collect == answerIdx ) {
-                                    user.incPoint += 3;
 
-                                    if( !isComboInit ) {
-                                        user.quizCombo++;
-                                        const incPoint = aqm.getComboPoint(user.quizCombo);
-                                        user.incPoint += incPoint;
-                                        user.saveFlag |= User.getSaveFlag().SFLAG_INC_POINT;
+                                    if( quizObj.collect == answerIdx ) {
+                                        //user.incPoint += 3;
+                                        //user.saveFlag |= User.getSaveFlag().SFLAG_INC_POINT;
+
+                                        if( !isComboInit ) {
+                                            user.quizCombo++;
+                                            const incPoint = aqm.getComboPoint(user.quizCombo);
+                                            //user.incPoint += incPoint;
+                                            //user.saveFlag |= User.getSaveFlag().SFLAG_INC_POINT;
+                                        }
+                                        else {
+                                            user.quizCombo = 1;
+                                        }
                                     }
                                     else {
-                                        user.quizCombo = 1;
+                                        if( user.quizCombo > 0 && user.quizCombo > user.maxCombo ) {
+                                            user.maxCombo = user.quizCombo;
+                                            user.saveFlag |= User.getSaveFlag().SFLAG_MAX_COMBO;
+                                        }
+                                        user.quizCombo = 0;
                                     }
-                                }
-                                else {
-                                    if( user.quizCombo > 0 && user.quizCombo > user.maxCombo ) {
-                                        user.maxCombo = user.quizCombo;
-                                        user.saveFlag |= User.getSaveFlag().SFLAG_MAX_COMBO;
-                                    }
-                                    user.quizCombo = 0;
-                                }
 
-                                aqm.serverMan.sendPacket( user.socket, P.SOCK.ComboInfo, {cnt: user.quizCombo, point: user.point + user.incPoint});
+                                    aqm.serverMan.sendPacket( user.socket, P.SOCK.ComboInfo, {cnt: user.quizCombo, point: user.point + user.incPoint});
+                                }
+                                catch(e) {
+                                    console.log(e);
+                                }
                             });
 
                             aqm.prevQuizObjStr = curQuizObjStr;
