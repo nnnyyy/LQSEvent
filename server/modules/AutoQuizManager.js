@@ -19,7 +19,7 @@ class AutoQuizManager {
         this.aSelect = [0,0,0];
         this.prevQuizObjStr = "";
         this.tUpdate500ms = 0;
-        this.aTop5 = [];
+        this.aTop10 = [];
     }
 
     update(tCur) {
@@ -73,7 +73,9 @@ class AutoQuizManager {
                             //  정답자 콤보 처리
                             this.mUserSelect.forEach(function(answerIdx, id ) {
                                 let user = aqm.serverMan.getUser( id );
-                                const isComboInit = aqm.prevQuizObjStr !== user.lastQuizObjectStr;
+                                //  문제 끊길 시 초기화  처리
+                                //const isComboInit = aqm.prevQuizObjStr !== user.lastQuizObjectStr;
+                                const isComboInit = false;
 
                                 user.lastQuizObjectStr = curQuizObjStr;
                                 if( !user ) return;
@@ -133,9 +135,9 @@ class AutoQuizManager {
                     return u2.quizCombo - u1.quizCombo;
                 });
 
-                this.aTop5 = aUserSorted.slice(0, 5);
+                this.aTop10 = aUserSorted.slice(0, 10);
 
-                aqm.serverMan.broadcastPacket( P.SOCK.CurrentComboRank, { ranker: this.aTop5 } );
+                aqm.serverMan.broadcastPacket( P.SOCK.CurrentComboRank, { ranker: this.aTop10 } );
             }
         }catch(e) {
             console.log(e);

@@ -28,7 +28,8 @@
     export default {
         data: function () {
             return {
-                items: []
+                items: [
+                ]
             };
         },
         created:function() {
@@ -57,9 +58,9 @@
     #combo-rank {
         position: absolute;
         left: 0;
-        top: 110px;
+        top: 230px;
         width: 200px;
-        height: 220px;
+        height: 400px;
         background-color: white;
         border-bottom-right-radius: 10px;
         border-top-right-radius: 10px;
