@@ -81,7 +81,6 @@ class Global {
     }
 
     onCurrentComboRank( packet ) {
-        console.log(packet);
         this.vBus.$bus.$emit(P.SOCK.CurrentComboRank, packet);
     }
 

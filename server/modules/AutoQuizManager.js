@@ -20,12 +20,13 @@ class AutoQuizManager {
         this.prevQuizObjStr = "";
         this.tUpdate500ms = 0;
         this.aTop10 = [];
+        this.tStart = 0;
     }
 
     update(tCur) {
         try {
             const aqm = this;
-            if( !this.isRunning ) {
+            if( !this.isRunning && tCur - this.tStart >= 1000 ) {
                 new Promise(function(resolve, reject) {
                     DBHelper.getRandQuiz(function(result) {
                         aqm.setQuiz(tCur, result.quizdata);
@@ -113,6 +114,7 @@ class AutoQuizManager {
                     case 2:
                     {
                         if( tCur - this.tStart >= 5000 ) {
+                            this.tStart = tCur;
                             this.state = 0;
                             this.isRunning = false;
                         }
