@@ -15,6 +15,7 @@ class User {
         this.saveFlag = 0;
         this.maxCombo = 0;
         this.incPoint = 0;
+        this.lastQuizObjectStr = "";
     }
 
     static getSaveFlag() {
