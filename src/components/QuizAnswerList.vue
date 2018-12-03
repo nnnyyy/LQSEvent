@@ -80,7 +80,7 @@
                     return ''
                 }
 
-                return user + ' 외 ';
+                return user + ' 포함 ';
             }
         }
     }
