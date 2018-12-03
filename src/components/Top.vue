@@ -26,6 +26,8 @@
             onBtnOpenMenu: function(e) {
                 this.$bus.$emit("openInventory", "");
             }
+        },
+        created: function() {
         }
     }
 </script>

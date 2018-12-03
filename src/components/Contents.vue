@@ -60,6 +60,8 @@
 </script>
 
 <style>
+</style>
+<style scoped>
     li {
         list-style: none;
     }

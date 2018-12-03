@@ -98,6 +98,12 @@ class AutoQuizManager {
                                         else {
                                             user.quizCombo = 1;
                                         }
+
+                                        //  맞추고 있을 때도 플래그를 올린다.
+                                        if( user.quizCombo > 0 && user.quizCombo > user.maxCombo ) {
+                                            user.maxCombo = user.quizCombo;
+                                            user.saveFlag |= User.getSaveFlag().SFLAG_MAX_COMBO;
+                                        }
                                     }
                                     else {
                                         if( user.quizCombo > 0 && user.quizCombo > user.maxCombo ) {

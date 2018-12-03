@@ -311,7 +311,6 @@ class ServerManager {
         this.broadcastAllPacket( P.SOCK.QuizRecordRank, {list: AutoQuizMan.quizRecordRankList});
 
         if( !userdata ) {
-
             this.sendPacket(socket, P.SOCK.NotLogined, { ret: 0});
             return;
         }

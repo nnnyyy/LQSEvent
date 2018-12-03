@@ -10,4 +10,8 @@ Router.get('/', function(req, res, next) {
     res.render('index');
 });
 
+Router.get('/statistics', function(req, res, next) {
+    res.render('index');
+});
+
 module.exports = Router;
