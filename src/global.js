@@ -7,9 +7,13 @@ import P from '../common/protocol';
 
 class Global {
     constructor() {
+        this.vBus = new Vue();
+    }
+
+    connectSocket() {
+        console.log('socket connecting...');
         this.socket = io();
         this.initSocketListener();
-        this.vBus = new Vue();
     }
 
     initSocketListener() {
