@@ -17,6 +17,7 @@ class AutoQuizManager {
         this.isRunning = false;
         this.mUserSelect = new Map();
         this.aSelect = [0,0,0];
+        this.aFirstSelect = ['','',''];
         this.prevQuizObjStr = "";
         this.tUpdate500ms = 0;
         this.tUpdate30s = 0;
@@ -36,15 +37,16 @@ class AutoQuizManager {
                     });
                 })
                 .then(function() {
-                    let quizObj = aqm.curQuizObject;
+                        let quizObj = aqm.curQuizObject;
                         if( aqm.prevQuizObjStr === "" ) {
                             aqm.prevQuizObjStr = JSON.stringify(aqm.curQuizObject);
                         }
-                    quizObj.tRemain = 10000;
-                    quizObj.state = 0;
-                    aqm.mUserSelect.clear();
-                    aqm.aSelect = [0,0,0];
-                    aqm.serverMan.broadcastPacket( P.SOCK.QuizData, quizObj );
+                        quizObj.tRemain = 10000;
+                        quizObj.state = 0;
+                        aqm.mUserSelect.clear();
+                        aqm.aSelect = [0,0,0];
+                        aqm.aFirstSelect = ['','',''];
+                        aqm.serverMan.broadcastPacket( P.SOCK.QuizData, quizObj );
                 })
                 .catch(function(err) {
                     console.log(err);
@@ -147,7 +149,7 @@ class AutoQuizManager {
                         aUserSorted.push({nick: user.nick, quizCombo: user.quizCombo, level: user.level});
                 });
 
-                this.serverMan.broadcastPacket( P.SOCK.QuizAnswerCnt, {cnts: aqm.aSelect});
+                this.serverMan.broadcastPacket( P.SOCK.QuizAnswerCnt, {cnts: aqm.aSelect, firstUsers: aqm.aFirstSelect});
 
                 aUserSorted.sort(function(u1, u2) {
                     return u2.quizCombo - u1.quizCombo;
@@ -195,12 +197,17 @@ class AutoQuizManager {
                 return;
             }
 
+            const user = this.serverMan.getUser( id );
+
             this.mUserSelect.set(id, answerIdx);
             this.aSelect[answerIdx]++;
 
+            if( this.aFirstSelect[answerIdx] == '' ) {
+                this.aFirstSelect[answerIdx] = user.nick;
+            }
+
             if( this.mUserSelect.size == 1 ) {
                 //  최초 선택자
-                const user = this.serverMan.getUser( id );
                 this.serverMan.broadcastPacket(P.SOCK.AnswerFirstSelectUser, {nick: user.nick, level: user.level });
             }
         }

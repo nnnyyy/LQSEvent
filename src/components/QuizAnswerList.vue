@@ -5,7 +5,7 @@
                 <li style="position: relative" :class="{qal_li_mobile: isMobile}">
                     <div :class="{click: item.isClicked, answer: !isMobile, answermobile: isMobile }" :style="item.style" @click="onBtnSelectAnswer(item.number-1)">
                         {{item.number}}. {{item.answer}}
-                        <div :class="{answer_inner: !isMobile, answermobile_inner: isMobile}" style="" v-text="item.selectedCnt">0</div>
+                        <div :class="{answer_inner: !isMobile, answermobile_inner: isMobile}" style="">{{getUserText(item.firstUser)}} {{item.selectedCnt}}</div>
                     </div>
                 </li>
             </template>
@@ -27,7 +27,7 @@
             };
         },
         created: function() {
-            const item = { number: 1, answer: "보기", style: {}, isClicked: false, selectedCnt: 0 }
+            const item = { number: 1, answer: "보기", style: {}, isClicked: false, selectedCnt: 0, firstUser: '' }
             this.answers.push(item);
             this.answers.push(item);
             this.answers.push(item);
@@ -38,9 +38,9 @@
             this.$bus.$on(P.SOCK.QuizData, function( data ) {
                 const packet = JSON.parse(data);
                 v.answers = [];
-                v.answers.push({isClicked: false, number: 1, answer: packet.answer[0], style: {}, selectedCnt: 0});
-                v.answers.push({isClicked: false, number: 2, answer: packet.answer[1], style: {}, selectedCnt: 0});
-                v.answers.push({isClicked: false, number: 3, answer: packet.answer[2], style: {}, selectedCnt: 0});
+                v.answers.push({isClicked: false, number: 1, answer: packet.answer[0], style: {}, selectedCnt: 0, firstUser: ''});
+                v.answers.push({isClicked: false, number: 2, answer: packet.answer[1], style: {}, selectedCnt: 0, firstUser: ''});
+                v.answers.push({isClicked: false, number: 3, answer: packet.answer[2], style: {}, selectedCnt: 0, firstUser: ''});
                 v.selectable = true;
             });
 
@@ -56,6 +56,9 @@
                 v.answers[0].selectedCnt = packet.cnts[0];
                 v.answers[1].selectedCnt = packet.cnts[1];
                 v.answers[2].selectedCnt = packet.cnts[2];
+                v.answers[0].firstUser = packet.firstUsers[0];
+                v.answers[1].firstUser = packet.firstUsers[1];
+                v.answers[2].firstUser = packet.firstUsers[2];
             });
         },
         methods: {
@@ -71,6 +74,13 @@
                     G.sendPacket(P.SOCK.QuizAnswer, {answer: idx});
                     this.selectable = false;
                 }
+            },
+            getUserText: function( user ) {
+                if( user == '' ) {
+                    return ''
+                }
+
+                return user + ' 외 ';
             }
         }
     }
@@ -90,6 +100,7 @@
     }
 
     li {
+        list-style: none;
         margin: 36px 4px;
     }
 
@@ -112,7 +123,7 @@
         width: 700px;
         height: 70px;
         line-height: 70px;
-        font-size: 26px;
+        font-size: 20px;
         cursor: pointer;
         position: absolute;
         left: calc( 50% - 350px);
