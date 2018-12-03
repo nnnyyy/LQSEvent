@@ -39,7 +39,6 @@
             onQuizRecordRank: function( packet ) {
                 const v = this;
                 v.items = packet.list;
-                console.log(packet);
             },
             getImageSrc: function( level ) {
                 return '/images/star'+ level +'.png';
