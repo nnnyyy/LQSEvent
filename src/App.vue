@@ -80,6 +80,16 @@
             'cur-combo-rank': G.isMobile() ? '' : CurrentComboRank,
             'quiz-record-rank': G.isMobile() ? '' : QuizRecordRank,
             'box-effect': BoxEffect
+        },
+        mounted: function() {
+            const v = this;
+            $(document).ready(function() {
+                let scriptEl = document.createElement('script');
+                scriptEl.setAttribute('src', '//t1.daumcdn.net/adfit/static/ad.min.js');
+                scriptEl.async = true;
+                document.head.appendChild(scriptEl);
+                document.body.appendChild(scriptEl);
+            });
         }
     }
 </script>

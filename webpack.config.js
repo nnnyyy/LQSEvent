@@ -13,7 +13,8 @@ const sourceMap = env === 'development' ? 'inline-source-map' : '';
 const devServerConfig = {
     proxy: {
         "**": "http://127.0.0.1:3000"
-    }
+    },
+    port: 8082
 };
 
 const cssLoader = {
