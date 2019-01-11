@@ -17,10 +17,7 @@ class Global {
     }
 
     initSocketListener() {
-        const g = this;
-        /*
-        this.socket.on(P.SOCK.NotLogined, function(packet) { g.onNotLogined(packet); });
-        this.socket.on(P.SOCK.LoginRequest, function(packet) { g.onLoginRequest(packet); });
+        const g = this;        
         this.socket.on(P.SOCK.QuizData, function(packet) { g.onQuizData(packet); });
         this.socket.on(P.SOCK.QuizDataResult, function(packet) { g.onQuizDataResult(packet); });
         this.socket.on(P.SOCK.AlertMsg, function(packet) { g.onAlertMsg(packet); });
@@ -28,8 +25,7 @@ class Global {
         this.socket.on(P.SOCK.QuizAnswerCnt, function(packet) { g.onQuizAnswerCnt(packet); });
         this.socket.on(P.SOCK.CurrentComboRank, function(packet) { g.onCurrentComboRank(packet); });
         this.socket.on(P.SOCK.AnswerFirstSelectUser, function(packet) { g.onAnswerFirstSelectUser(packet); });
-        this.socket.on(P.SOCK.QuizRecordRank, function(packet) { g.onQuizRecordRank(packet); });
-        */
+        this.socket.on(P.SOCK.QuizRecordRank, function(packet) { g.onQuizRecordRank(packet); });        
     }
 
     isMobile() {
@@ -86,7 +82,7 @@ class Global {
         }
     }
 
-    onQuizData( packet ) {
+    onQuizData( packet ) {        
         this.vBus.$bus.$emit(P.SOCK.QuizData, JSON.stringify( packet ));
         if( packet.state == 0 ) {
             this.vBus.$bus.$emit(P.StartTimer, { remain: packet.tRemain, max: 10000 });

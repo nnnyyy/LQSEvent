@@ -1,6 +1,6 @@
 <template>
 <div id="main">
-    로그인
+    <button @click="onLogin">로그인</button>
 </div>    
 </template>
 
@@ -17,7 +17,11 @@
         components: {
         },
         methods: {
-
+            onLogin() {
+                G.hpost(P.HTTP.Login, {id: 'nnnyyy84', pw: 's1980819'}, data => {
+                    window.location.href = '/';
+                });
+            }
         },
         created() {
 

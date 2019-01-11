@@ -17,6 +17,10 @@ const routesAuth = require('../router/auth');
 class ServerManager {
     constructor(app) {
 
+        app.use((req, res, next) => {
+            req.sm = this;
+            next();
+        } );
         app.use('/', routes );
         app.use('/auth/', routesAuth);
 
@@ -123,34 +127,71 @@ class ServerManager {
         const sm = this;
     }
 
-    onLoginRequest( socket, packet ) {
-        try {
-            let ip = socket.handshake.address.substr(7);
-            if( socket.handshake.headers['x-real-ip'] != null ) {
-                ip = socket.handshake.headers['x-real-ip'];
-            }
+    login( id, pw, ip, cb ) {
+        this.pm_loginRequest(id, pw, ip)
+        .then(this.pm_getUserInfo)
+        .then(data => {
+            cb({ret: 0, userinfo: data.userinfo});                        
+        }).catch(err=> {
+            cb({ret: -1});
+        });
+    }
 
-            const sm = this;
-
-
-
-            this.login(socket, packet.id, packet.pw, ip)
-            .then(this.loadPoint)
-            .then(this.loadQuizInfo)
-            .then(this.createUser)
-            .then(function(ret) {
-                sm.sendPacket(socket, P.SOCK.LoginRequest, ret.result);
-
-                if( AutoQuizMan.isQuizRunning() ) {
-                    sm.sendPacket(socket, P.SOCK.QuizData, AutoQuizMan.getCurQuizData());
+    pm_loginRequest(id, pw, ip) {
+        let data = {     
+            ret: 0       
+        };
+        return new Promise((res,rej)=> {
+            DBHelper.login(id, pw, ip, result => {
+                if( result.ret !== 0 ) {
+                    rej();
+                    return;
                 }
-            })
-            .catch(function(err) {
-                    console.log(err);
-            });
-        }catch(e) {
 
-        }
+                const userinfo = {
+                    id: result.id,
+                    nick: result.nick,
+                    level: result.auth,
+                    adminLevel: result.adminMemberVal,
+                    point: 0
+                };
+
+                data.userinfo = userinfo;                
+                res(data);
+            });
+        });
+    }
+
+    pm_getUserInfo(data) {
+        return new Promise( (res, rej) => {
+            DBHelper.getUserInfo(data.userinfo.id, result => {
+                if( result.ret !== 0 ) {
+                    rej();
+                    return;
+                }
+
+                data.userinfo.oxwincnt = result.info.oxwincnt;
+                data.userinfo.banCnt = result.info.bancnt;
+                data.userinfo.point = result.info.ap;
+                
+                res(data);
+            })
+        });
+    }
+
+    pm_getQuizInfo(data) {
+        data.userinfo.maxCombo = 0;
+        return new Promise((resolve, reject) => {
+            DBHelper.getQuizInfo(data.userinfo.id, result => {
+                if( result.ret != 0 ) {
+                    reject();
+                    return;
+                }
+
+                data.userinfo.maxCombo = result.maxCombo;
+                resolve(data);
+            });
+        });
     }
 
     onDisconnect(sock) {
@@ -205,20 +246,7 @@ class ServerManager {
             console.log(e);
         }
     }
-
-    login( socket, id, pw, ip ) {
-        let ret = { sock: socket };
-        const sm = this;
-        return new Promise(function(resolve, reject) {
-            DBHelper.login( id, pw, ip, function(result) {
-                ret.id = id;
-                ret.sm = sm;
-                ret.result = result;
-                resolve(ret);
-            });
-        });
-    }
-
+    
     logout( socket, id ) {
         const sm = this;
         const user = this.mUsers.get(id);
@@ -251,66 +279,18 @@ class ServerManager {
         .then(function() {
             user.saveFlag = 0;
             sm.mUsers.delete( id );
-            delete socket.handshake.session.userdata;
-            socket.handshake.session.save();
+            if(deleteSession) {
+                delete socket.handshake.session.userdata;
+                socket.handshake.session.save();
+            }
         })
         .catch(function(err) {
             console.log(err);
         })
     }
 
-    loadPoint( ret ) {
-        return new Promise(function(resolve, reject) {
-            DBHelper.getActivePoint(ret.id, function(result) {
-                if( result.ret != 0 ) {
-                    reject();
-                    return;
-                }
-
-                ret.result.point = result.point;
-                resolve(ret);
-            });
-        });
-    }
-
-    loadQuizInfo( ret ) {
-        ret.result.maxCombo = 0;
-        return new Promise(function(resolve, reject) {
-            DBHelper.getQuizInfo(ret.id, function(result) {
-                if( result.ret != 0 ) {
-                    reject();
-                    return;
-                }
-
-                ret.result.maxCombo = result.maxCombo;
-                resolve(ret);
-            });
-        });
-    }
-
-    createUser( ret ) {
-        const sm = ret.sm;
-        const socket = ret.sock;
-        socket.handshake.session.userdata = { id: ret.id };
-        socket.handshake.session.save();
-
-        socket.join('auth');
-
-        return new Promise(function(resolve, reject) {
-            let newUser = new User(socket);
-            newUser.id = ret.id;
-            newUser.nick = ret.result.nick;
-            newUser.level = ret.result.auth;
-            newUser.adminLevel = ret.result.adminMemberVal;
-            newUser.point = ret.result.point;
-            newUser.maxCombo = ret.result.maxCombo;
-            sm.mUsers.set(ret.id, newUser);
-            resolve(ret);
-        });
-    }
-
     //  유저가 접속합니다.
-    connectUser(socket) {
+    connectUser(socket) {        
         const userdata = socket.handshake.session.userdata;
 
         this.setPreListener(socket);
@@ -318,15 +298,7 @@ class ServerManager {
         this.broadcastAllPacket( P.SOCK.QuizRecordRank, {list: AutoQuizMan.quizRecordRankList});
 
         if( !userdata ) {
-            this.sendPacket(socket, P.SOCK.NotLogined, { ret: 0});
-            return;
-        }
-
-        const user = this.mUsers.get( userdata.id );
-
-        if( user && user.socket.id != socket.id && user.socket.connected ) {
-            //   중복 접속
-            this.sendPacket(socket, P.SOCK.NotLogined, {ret: -2});
+            this.sendPacket(socket, P.SOCK.NotLogined);
             return;
         }
 
@@ -334,9 +306,39 @@ class ServerManager {
             this.setReconnect(socket, userdata.id);
         }
         else {
-            delete socket.handshake.session.userdata;
-            socket.handshake.session.save();
-            this.sendPacket(socket, P.SOCK.NotLogined, {});
+            const userdata = socket.handshake.session.userdata;
+            let ret = {
+                id: userdata.id,
+                nick: userdata.nick,
+                auth: userdata.level,
+                adminLevel: userdata.adminLevel,
+                point: userdata.point,
+                servName: this.serv_name,
+                maxCombo: userdata.maxCombo
+            }            
+
+            let ip = socket.handshake.address.substr(7);
+            if( socket.handshake.headers['x-real-ip'] != null ) {
+                ip = socket.handshake.headers['x-real-ip'];
+            }
+
+            socket.join('auth');            
+
+            let newUser = new User(this, socket);
+            newUser.ip = ip;
+            newUser.id = ret.id;
+            newUser.nick = ret.nick;
+            newUser.level = ret.auth;
+            newUser.adminLevel = ret.adminLevel;
+            newUser.point = ret.point;
+            newUser.banCnt = userdata.banCnt;
+            newUser.oxWinCnt = userdata.oxwincnt;
+            newUser.maxCombo = ret.maxCombo;
+            this.mUsers.set(ret.id, newUser);
+
+            if( AutoQuizMan.isQuizRunning() ) {
+                this.sendPacket(socket, P.SOCK.QuizData, AutoQuizMan.getCurQuizData());
+            }
         }
     }
 
@@ -359,10 +361,7 @@ class ServerManager {
         const user = this.mUsers.get(id);
         user.socket = socket;
         user.tLogout = 0;
-
-
-
-        this.sendPacket(socket, P.SOCK.LoginRequest, { ret:0, id: id, nick: user.nick, auth: user.level, adminMemberVal: user.adminLevel, point: user.point });
+        
         this.sendPacket(socket, P.SOCK.ComboInfo, {cnt: user.quizCombo, point: user.point});
 
         if( AutoQuizMan.isQuizRunning() ) {

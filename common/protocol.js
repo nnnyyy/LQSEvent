@@ -7,7 +7,8 @@ const VueBus = {
     SetAlertMsg: "SetAlertMsg",
     OpenGachaBox: "OpenGachaBox",
     HTTP: {
-        CheckLogin: "/auth/checklogin"
+        CheckLogin: "/auth/checklogin",
+        Login: "/auth/login"
     },
     SOCK: {
         NotLogined: "NotLogined",

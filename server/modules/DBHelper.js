@@ -30,6 +30,42 @@ class DBHelper {
         }
     }
 
+    getUserInfo(id, cb) {
+        //  getBanCnt, getActivePoint 를 통합
+        try {
+            this.sql.query("CALL getUserInfo( ? )", [id], function(err, rows) {
+                try {
+                    if(err) {
+                        console.log('error : ' + err);
+                        cb({ret: -99});
+                        return;
+                    }
+    
+                    const IDX = {
+                        OXWIN_CNT: 0,
+                        BAN_CNT: 1, 
+                        ACTIVE_POINT: 3
+                    };
+    
+                    let info = {
+                        oxwincnt: rows[IDX.OXWIN_CNT][0].cnt,
+                        bancnt: rows[IDX.BAN_CNT][0].bancnt,
+                        ap: rows[IDX.ACTIVE_POINT][0] ? rows[IDX.ACTIVE_POINT][0].ap : 0
+                    }
+    
+                    cb({ret: 0, info: info });
+                }
+                catch(e) {
+                    console.log(e);
+                    cb({ret: -99 });
+                }                
+            });
+        }catch(err) {
+            console.log(err);
+            cb({ret: -99 });
+        }
+    }
+
     getRandQuiz(cb) {
         try {
             this.sql.query("select * from quiz where quiz_idx >= 4 order by rand() limit 0,1", function(err, rows) {
