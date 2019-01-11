@@ -17,14 +17,27 @@
         components: {
         },
         methods: {
+            onCheckLoginRet(packet) {                
+                if( packet.ret === 0 ) {
+                    window.location.href = '/';
+                }
+            },
             onLogin() {
                 G.hpost(P.HTTP.Login, {id: 'nnnyyy84', pw: 's1980819'}, data => {
-                    window.location.href = '/';
+                    if( data.ret === 0 ) {
+                        window.location.href = '/';
+                    }                    
+                    else {
+                        alert('아이디 또는 비번이 맞지 않습니다');
+                    }
                 });
             }
         },
         created() {
 
+        },
+        mounted() {
+            G.hget(P.HTTP.CheckLogin, this.onCheckLoginRet);
         }
     }
 </script>

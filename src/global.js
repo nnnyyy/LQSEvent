@@ -65,23 +65,6 @@ class Global {
         this.vBus.$bus.$emit(P.StartTimer, 10000);
     }
 
-    onNotLogined( packet ) {
-        if( packet.ret == -2 ) {
-            alert('중복 접속입니다!');
-            return;
-        }
-        const info = {q: "로그인 후에 이용 해 주세요", a: [ "테스트1", "테스트2", "테스트3" ]};
-        this.vBus.$bus.$emit(P.SOCK.NotLogined, packet);
-    }
-
-    onLoginRequest( packet ) {
-        if( packet.ret == 0 )
-            this.vBus.$bus.$emit(P.SOCK.LoginRequest, packet);
-        else {
-            alert('아이디 또는 비밀번호가 맞지 않습니다');
-        }
-    }
-
     onQuizData( packet ) {        
         this.vBus.$bus.$emit(P.SOCK.QuizData, JSON.stringify( packet ));
         if( packet.state == 0 ) {
