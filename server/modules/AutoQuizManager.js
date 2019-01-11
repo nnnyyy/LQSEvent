@@ -101,7 +101,7 @@ class AutoQuizManager {
                                             user.quizCombo = 1;
                                         }
 
-                                        //  맞추고 있을 때도 플래그를 올린다.
+                                        //  맞히고 있을 때도 플래그를 올린다.
                                         if( user.quizCombo > 0 && user.quizCombo > user.maxCombo ) {
                                             user.maxCombo = user.quizCombo;
                                             user.saveFlag |= User.getSaveFlag().SFLAG_MAX_COMBO;
@@ -110,6 +110,7 @@ class AutoQuizManager {
                                     else {
                                         if( user.quizCombo > 0 && user.quizCombo > user.maxCombo ) {
                                             user.maxCombo = user.quizCombo;
+                                            user.incPoint -= 15;
                                             user.saveFlag |= User.getSaveFlag().SFLAG_MAX_COMBO;
                                         }
                                         user.quizCombo = 0;
@@ -218,13 +219,7 @@ class AutoQuizManager {
 
     getComboPoint( combo ) {
 
-        if( combo == 5 ) return 10;
-
-        if( combo == 10 ) return 20;
-
-        if( combo == 20 ) return 30;
-
-        if( combo == 30 ) return 40;
+        if( combo > 0 && combo % 5 == 0 ) return 5;
 
         return 0;
     }

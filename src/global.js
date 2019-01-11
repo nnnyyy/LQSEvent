@@ -18,6 +18,7 @@ class Global {
 
     initSocketListener() {
         const g = this;
+        /*
         this.socket.on(P.SOCK.NotLogined, function(packet) { g.onNotLogined(packet); });
         this.socket.on(P.SOCK.LoginRequest, function(packet) { g.onLoginRequest(packet); });
         this.socket.on(P.SOCK.QuizData, function(packet) { g.onQuizData(packet); });
@@ -28,6 +29,7 @@ class Global {
         this.socket.on(P.SOCK.CurrentComboRank, function(packet) { g.onCurrentComboRank(packet); });
         this.socket.on(P.SOCK.AnswerFirstSelectUser, function(packet) { g.onAnswerFirstSelectUser(packet); });
         this.socket.on(P.SOCK.QuizRecordRank, function(packet) { g.onQuizRecordRank(packet); });
+        */
     }
 
     isMobile() {
@@ -37,6 +39,28 @@ class Global {
         }
 
         return false;
+    }
+
+    emit(protocol, data) {
+        this.vBus.$bus.$emit(protocol, data);
+    }    
+
+    on( protocol, cb ) {
+        this.vBus.$bus.$on(protocol, cb);
+    }
+
+    hget( addr, cb ) {
+        this.vBus.$http.get(addr).then(res => cb(res.data))
+        .catch(err => console.log(err));
+    }
+
+    hpost( addr, item, cb ) {        
+        this.vBus.$http.post(addr, item).then(res => cb(res.data))
+        .catch(err => console.log(err));
+    }
+
+    sendPacket( protocol, packetData ) {
+        this.socket.emit(protocol, packetData);
     }
 
     setQuizInfo() {
@@ -97,11 +121,7 @@ class Global {
 
     onQuizRecordRank( packet ) {
         this.vBus.$bus.$emit(P.SOCK.QuizRecordRank, packet);
-    }
-
-    sendPacket( protocol, packetData ) {
-        this.socket.emit(protocol, packetData);
-    }
+    }    
 
     showComboAlert( cnt ) {
         if( cnt < 2 ) return;

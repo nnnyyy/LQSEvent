@@ -4,7 +4,6 @@
 const express = require('express');
 const path = require('path');
 const ServerManager = require('./modules/ServerManager.js');
-const routes = require('./router/index.js');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
@@ -41,6 +40,6 @@ app.use(cookieParser());
 app.use(sessionMiddleware);
 app.session = sessionMiddleware;
 
-app.use('/', routes );
+
 
 const sm = new ServerManager(app);

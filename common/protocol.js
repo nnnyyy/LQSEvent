@@ -6,6 +6,9 @@ const VueBus = {
     StartTimer: "StartTimer",
     SetAlertMsg: "SetAlertMsg",
     OpenGachaBox: "OpenGachaBox",
+    HTTP: {
+        CheckLogin: "/auth/checklogin"
+    },
     SOCK: {
         NotLogined: "NotLogined",
         LoginRequest: "LoginRequest",

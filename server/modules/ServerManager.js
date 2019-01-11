@@ -11,8 +11,15 @@ const DBHelper = require('./DBHelper');
 const User = require('./User');
 const AutoQuizMan = require('./AutoQuizManager');
 
+const routes = require('../router/index');
+const routesAuth = require('../router/auth');
+
 class ServerManager {
     constructor(app) {
+
+        app.use('/', routes );
+        app.use('/auth/', routesAuth);
+
         console.log('ServerManager Init');
         this.http = http.Server(app);
         this.io = socketio(this.http, {
