@@ -26,4 +26,18 @@ Router.post('/login', function(req, res, next) {
     });
 });
 
+Router.post('/login', (req,res,next)=> {
+    const sm = req.sm;
+
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress.substr(7);
+    const id = req.body.id;
+    const pw = req.body.pw;    
+
+    let oPacket = { ret: 0 }
+
+    sm.login(id, pw, ip, result=> {
+        res.send( oPacket );
+    });
+});
+
 module.exports = Router;
